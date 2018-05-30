@@ -2,6 +2,7 @@ package edu.uoc.elearn.lti.provider.controller;
 
 import edu.uoc.elearn.lti.provider.security.AuthenticationHolder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,37 +16,15 @@ import java.io.UnsupportedEncodingException;
 @Controller
 @RequestMapping("/")
 @Slf4j
+@PreAuthorize("isAuthenticated")
 public class MainController {
 
     @RequestMapping(method = RequestMethod.POST)
-    public String init(HttpServletRequest request) throws UnsupportedEncodingException {
-        AuthenticationHolder authenticationHolder = new AuthenticationHolder(request);
-
-        boolean is_valid = authenticationHolder.isValid();
-        if (is_valid) {
-//            String sClassroomid = authenticationHolder.getCourseKey();
-//            String fullname = authenticationHolder.getFullName();
-//            boolean is_admin = authenticationHolder.isAdmin();
-//            boolean is_instructor = authenticationHolder.isInstructor();
-//            boolean is_pra = authenticationHolder.isPRA();
-//            boolean is_instrutor_or_pra = authenticationHolder.isUserValidAndInstructorOrPRA();
-
-            //log.info("user: "  + videoId+" classroomid: "+sClassroomid);
-            //To get custom parameters
-//            String sample = authenticationHolder.getCustomParameter("sample"); //The method prefix sample to custom_sample
-
-        }
-        return "redirect:/home";
-    }
-
-    @RequestMapping(value = "/home", method = RequestMethod.GET)
-    public void home(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException, IOException {
+    public void init(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException, IOException {
         AuthenticationHolder authenticationHolder = new AuthenticationHolder(request);
 
         response.getWriter().println(render_home(authenticationHolder)) ;
-
     }
-
 
     /**
      * Renders a home with requested data
