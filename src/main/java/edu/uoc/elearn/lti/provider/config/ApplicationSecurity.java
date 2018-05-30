@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
+import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
@@ -84,8 +85,7 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
     private OpenApiClientFilter openapiFilter() {
         OpenApiClientFilter openApiFilter = new OpenApiClientFilter(OPEN_API_URI);
-        OAuth2RestTemplate openapiRestTemplate = new OAuth2RestTemplate(openapi(), oauth2ClientContext);
-        openApiFilter.setRestTemplate(openapiRestTemplate);
+        openApiFilter.setRestTemplate(openApiRestTemplate());
         return openApiFilter;
     }
 
@@ -110,4 +110,10 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
         openApiAuthorizedAspect.setRedirectUri(OPEN_API_URI);
         return openApiAuthorizedAspect;
     }
+
+    @Bean
+    public OAuth2RestOperations openApiRestTemplate() {
+        return new OAuth2RestTemplate(openapi(), oauth2ClientContext);
+    }
+
 }

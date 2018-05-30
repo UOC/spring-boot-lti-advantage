@@ -1,9 +1,9 @@
 package edu.uoc.elearn.openapi.spring;
 
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
@@ -14,6 +14,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Xavi Aracil <xaracil@uoc.edu>
@@ -41,7 +42,22 @@ public class OpenApiAuthorizedAspect implements InitializingBean {
 				this.requestCache.saveRequest(request, null);
 			}
 
-			return new ModelAndView("redirect:" + redirectUri);
+			final Class<?> returnType = ((MethodSignature) proceedingJoinPoint.getSignature()).getMethod().getReturnType();
+			if (returnType.getName().equals("void")) {
+				final HttpServletResponse response = getResponse(proceedingJoinPoint.getArgs());
+				if (response != null) {
+					response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+					response.setHeader("Location", redirectUri);
+					return null;
+				}
+			}
+			if (returnType.isAssignableFrom(ModelAndView.class)) {
+				return new ModelAndView("redirect:" + redirectUri);
+			}
+			if (returnType.isAssignableFrom(String.class)) {
+				return "redirect:" + redirectUri;
+			}
+			return null;
 		}
 		return proceedingJoinPoint.proceed();
 	}
@@ -50,6 +66,15 @@ public class OpenApiAuthorizedAspect implements InitializingBean {
 		for (Object arg : args) {
 			if (arg instanceof HttpServletRequest) {
 				return (HttpServletRequest) arg;
+			}
+		}
+		return null;
+	}
+
+	private HttpServletResponse getResponse(Object[] args) {
+		for (Object arg : args) {
+			if (arg instanceof HttpServletResponse) {
+				return (HttpServletResponse) arg;
 			}
 		}
 		return null;

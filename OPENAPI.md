@@ -35,12 +35,11 @@ In your ApplicationSecurity class:
     
 3. Define the filter for redirecting to OpenAPI:
 
-    	private OpenApiClientFilter openapiFilter() {
-    		OpenApiClientFilter openApiFilter = new OpenApiClientFilter("/login/openapi");
-    		OAuth2RestTemplate openapiRestTemplate = new OAuth2RestTemplate(openapi(), oauth2ClientContext);
-    		openApiFilter.setRestTemplate(openapiRestTemplate);
-    		return openApiFilter;
-    	}
+        private OpenApiClientFilter openapiFilter() {
+            OpenApiClientFilter openApiFilter = new OpenApiClientFilter(OPEN_API_URI);
+            openApiFilter.setRestTemplate(openApiRestTemplate());
+            return openApiFilter;
+        }
     
     	@Bean
     	@ConfigurationProperties("openapi.client")
@@ -57,6 +56,12 @@ In your ApplicationSecurity class:
     		return registration;
     	}
     	
+        @Bean
+        public OAuth2RestOperations openApiRestTemplate() {
+            return new OAuth2RestTemplate(openapi(), oauth2ClientContext);
+        }
+    
+
 4. Add the filter to your filter chain:
 
         @Override
@@ -128,4 +133,25 @@ See `edu.uoc.elearn.lti.provider.controller.UserController.java` in this project
 
 # Calls to OpenApi
 
+## Define urls
+Add urls in `application.properties`:
+
+    openapi.client.resource.user=https://cv.uoc.edu/webapps/uocapi/api/v1/user
+
+## Call to resources
+
+1. Add beans in your controller:
+
+        @Autowired
+        OAuth2RestOperations openApiRestTemplate;
+    
+        @Value("${openapi.client.resource.user}")
+        private String userResourceUrl;
+ 
+2. Make the call:
+    
+        Map userData = openApiRestTemplate.getForObject(userResourceUrl, Map.class);
+                
 See `edu.uoc.elearn.lti.provider.controller.UserController.java` in this project
+
+> We should definitely improve this, making a client library with objects 
