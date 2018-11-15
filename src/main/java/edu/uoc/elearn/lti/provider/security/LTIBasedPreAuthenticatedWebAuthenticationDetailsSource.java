@@ -1,6 +1,6 @@
 package edu.uoc.elearn.lti.provider.security;
 
-import edu.uoc.lti.LTIEnvironment;
+import edu.uoc.elc.lti.tool.Tool;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
@@ -10,9 +10,7 @@ import org.springframework.security.core.authority.mapping.SimpleAttributes2Gran
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,38 +19,57 @@ import java.util.List;
  *
  * @author xaracil@uoc.edu
  */
-class LTIBasedPreAuthenticatedWebAuthenticationDetailsSource implements AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> {
-    private final Log logger = LogFactory.getLog(this.getClass());
+public class LTIBasedPreAuthenticatedWebAuthenticationDetailsSource implements AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> {
+	private final Log logger = LogFactory.getLog(this.getClass());
 
-    private final Attributes2GrantedAuthoritiesMapper ltiUserRoles2GrantedAuthoritiesMapper = new SimpleAttributes2GrantedAuthoritiesMapper();
+	private final Attributes2GrantedAuthoritiesMapper ltiUserRoles2GrantedAuthoritiesMapper = new SimpleAttributes2GrantedAuthoritiesMapper();
 
-    private final List<String> adminUsers;
+	private final List<String> adminUsers;
 
-    private final List<String> adminDomainCodes;
+	private final List<String> adminDomainCodes;
 
-    public LTIBasedPreAuthenticatedWebAuthenticationDetailsSource() {
-        this(null, null);
-    }
+	private final LTITool ltiTool;
 
-    public LTIBasedPreAuthenticatedWebAuthenticationDetailsSource(List<String> adminUsers, List<String> adminDomainCodes) {
-        this.adminUsers = adminUsers;
-        this.adminDomainCodes = adminDomainCodes;
-    }
+	public LTIBasedPreAuthenticatedWebAuthenticationDetailsSource() {
+		this(null, null, null);
+	}
 
-    private String getConfigurationFile() {
-        URL resource = getClass().getResource("/authorizedConsumersKey.properties");
-        return resource.getPath();
-    }
+	public LTIBasedPreAuthenticatedWebAuthenticationDetailsSource(List<String> adminUsers, List<String> adminDomainCodes, LTITool ltiTool) {
+		this.adminUsers = adminUsers;
+		this.adminDomainCodes = adminDomainCodes;
+		this.ltiTool = ltiTool;
+	}
 
-    private Collection<String> getUserRoles(HttpServletRequest request) {
-        ArrayList<String> ltiUserRolesList = new ArrayList<>();
+	private String getToken(HttpServletRequest httpServletRequest) {
+		String token = httpServletRequest.getParameter("jwt");
+		if (token == null || "".equals(token)) {
+			token = httpServletRequest.getParameter("id_token");
+		}
+		return token;
+	}
 
-        LTIEnvironment ltiEnvironment = new LTIEnvironment(getConfigurationFile());
-        ltiEnvironment.parseRequest(request);
 
-        if (ltiEnvironment.isAuthenticated()) {
-            ltiUserRolesList.add("USER");
-        }
+	private Collection<String> getUserRoles(HttpServletRequest request) {
+		ArrayList<String> ltiUserRolesList = new ArrayList<>();
+
+		Tool tool = new Tool(ltiTool.getName(), ltiTool.getClientId(), ltiTool.getKeySetUrl(), ltiTool.getAccessTokenUrl(), ltiTool.getPrivateKey(), ltiTool.getPublicKey());
+		String token = getToken(request);
+		tool.validate(token);
+
+		if (tool.isValid()) {
+			ltiUserRolesList.add("USER");
+		}
+
+		if (tool.isLearner()) {
+			ltiUserRolesList.add("STUDENT");
+		}
+
+		if (tool.isInstructor()) {
+			ltiUserRolesList.add("INSTRUCTOR");
+			// TODO: do the UOC's specific stuff
+		}
+
+        /*
         if (ltiEnvironment.isCourseAuthorized() && !ltiEnvironment.isInstructor()) {
             ltiUserRolesList.add("STUDENT");
         }
@@ -79,38 +96,38 @@ class LTIBasedPreAuthenticatedWebAuthenticationDetailsSource implements Authenti
 
         if (isAdmin(ltiEnvironment.getUserName(), ltiEnvironment.getCustomParameter("username", request), ltiEnvironment.getCustomParameter("domain_code", request))) {
             ltiUserRolesList.add("ADMIN");
-        }
+        }*/
 
-        return ltiUserRolesList;
-    }
+		return ltiUserRolesList;
+	}
 
-    private boolean isAdmin(String userName, String customUserName, String domainCode) {
-        // super admin case
-        if ("admin".equals(userName) || "admin".equals(customUserName)) {
-            return true;
-        }
+	private boolean isAdmin(String userName, String customUserName, String domainCode) {
+		// super admin case
+		if ("admin".equals(userName) || "admin".equals(customUserName)) {
+			return true;
+		}
 
-        if (this.adminDomainCodes != null) {
-            if (this.adminDomainCodes.contains(domainCode)) {
-                return true;
-            }
-            ;
-        }
-        if (this.adminUsers != null) {
-            return this.adminUsers.contains(userName) || this.adminUsers.contains(customUserName);
-        }
+		if (this.adminDomainCodes != null) {
+			if (this.adminDomainCodes.contains(domainCode)) {
+				return true;
+			}
+			;
+		}
+		if (this.adminUsers != null) {
+			return this.adminUsers.contains(userName) || this.adminUsers.contains(customUserName);
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    @Override
-    public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails buildDetails(HttpServletRequest httpServletRequest) {
-        Collection<String> ltiUserRoles = this.getUserRoles(httpServletRequest);
-        final Collection<? extends GrantedAuthority> userGas = this.ltiUserRoles2GrantedAuthoritiesMapper.getGrantedAuthorities(ltiUserRoles);
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("LTI roles [" + ltiUserRoles + "] mapped to Granted Authorities: [" + userGas + "]");
-        }
+	@Override
+	public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails buildDetails(HttpServletRequest httpServletRequest) {
+		Collection<String> ltiUserRoles = this.getUserRoles(httpServletRequest);
+		final Collection<? extends GrantedAuthority> userGas = this.ltiUserRoles2GrantedAuthoritiesMapper.getGrantedAuthorities(ltiUserRoles);
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("LTI roles [" + ltiUserRoles + "] mapped to Granted Authorities: [" + userGas + "]");
+		}
 
-        return new PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails(httpServletRequest, userGas);
-    }
+		return new PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails(httpServletRequest, userGas);
+	}
 }

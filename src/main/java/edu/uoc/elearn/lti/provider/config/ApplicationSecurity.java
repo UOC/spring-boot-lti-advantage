@@ -2,6 +2,7 @@ package edu.uoc.elearn.lti.provider.config;
 
 import edu.uoc.elearn.lti.provider.security.LTIAuthenticationUserDetailsService;
 import edu.uoc.elearn.lti.provider.security.LTIBasedPreAuthenticatedProcessingFilter;
+import edu.uoc.elearn.lti.provider.security.LTITool;
 import edu.uoc.elearn.openapi.spring.OpenApiAuthorizedAspect;
 import edu.uoc.elearn.openapi.spring.OpenApiClientFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,91 +30,98 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableOAuth2Client
 @EnableAspectJAutoProxy
 public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
-    @Autowired
-    OAuth2ClientContext oauth2ClientContext;
+	@Autowired
+	OAuth2ClientContext oauth2ClientContext;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        LTIBasedPreAuthenticatedProcessingFilter preAuthFilter = new LTIBasedPreAuthenticatedProcessingFilter(null, null);
-        preAuthFilter.setCheckForPrincipalChanges(true);
-        preAuthFilter.setAuthenticationManager(authenticationManager());
+	@Autowired
+	LTITool ltiTool;
 
-        http
-                .addFilter(preAuthFilter)
-                .formLogin()
-                .loginPage("/login").permitAll()
-                .failureUrl("/login?error").permitAll()
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		LTIBasedPreAuthenticatedProcessingFilter preAuthFilter = new LTIBasedPreAuthenticatedProcessingFilter(null, null, ltiTool);
+		preAuthFilter.setCheckForPrincipalChanges(true);
+		preAuthFilter.setAuthenticationManager(authenticationManager());
 
+		http
+						.addFilter(preAuthFilter)
+						.formLogin()
+						.loginPage("/login").permitAll()
+						.failureUrl("/login?error").permitAll()
 
+						.and()
 
-                .and()
+						.logout()
+						.permitAll()
 
-                .logout()
-                .permitAll()
+						.and().addFilterBefore(openapiFilter(), BasicAuthenticationFilter.class)
 
-                .and().addFilterBefore(openapiFilter(), BasicAuthenticationFilter.class)
+						.servletApi()
+						.and()
 
-                .servletApi()
-                .and()
+						.authorizeRequests()
+						.antMatchers("/css/**").permitAll()
+						.antMatchers("/fonts/**").permitAll()
+						.antMatchers("/img/**").permitAll()
+						.antMatchers("/js/**").permitAll()
+						.antMatchers("/login/**").permitAll()
+						.antMatchers("/error/**").permitAll()
+						.antMatchers("/error").permitAll()
+						.antMatchers("/session-expired/**").permitAll()
+						.anyRequest().fullyAuthenticated()
 
-                .authorizeRequests()
-                .antMatchers("/css/**").permitAll()
-                .antMatchers("/fonts/**").permitAll()
-                .antMatchers("/img/**").permitAll()
-                .antMatchers("/js/**").permitAll()
-                .antMatchers("/login/**").permitAll()
-                .antMatchers("/error/**").permitAll()
-                .antMatchers("/error").permitAll()
-                .antMatchers("/session-expired/**").permitAll()
-                .anyRequest().fullyAuthenticated()
+						.and()
 
-                .and()
+						.csrf().disable();
 
-                .csrf().disable();
+	}
 
-    }
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
+		authenticationProvider.setPreAuthenticatedUserDetailsService(new LTIAuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>(ltiTool));
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
-        authenticationProvider.setPreAuthenticatedUserDetailsService(new LTIAuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>());
+		auth.authenticationProvider(authenticationProvider);
+	}
 
-        auth.authenticationProvider(authenticationProvider);
-    }
+	private final static String OPEN_API_URI = "/login/openapi";
 
-    private final static String OPEN_API_URI = "/login/openapi";
+	private OpenApiClientFilter openapiFilter() {
+		OpenApiClientFilter openApiFilter = new OpenApiClientFilter(OPEN_API_URI);
+		openApiFilter.setRestTemplate(openApiRestTemplate());
+		return openApiFilter;
+	}
 
-    private OpenApiClientFilter openapiFilter() {
-        OpenApiClientFilter openApiFilter = new OpenApiClientFilter(OPEN_API_URI);
-        openApiFilter.setRestTemplate(openApiRestTemplate());
-        return openApiFilter;
-    }
+	@Bean
+	@ConfigurationProperties("openapi.client")
+	public AuthorizationCodeResourceDetails openapi() {
+		return new AuthorizationCodeResourceDetails();
+	}
 
-    @Bean
-    @ConfigurationProperties("openapi.client")
-    public AuthorizationCodeResourceDetails openapi() {
-        return new AuthorizationCodeResourceDetails();
-    }
+	@Bean
+	@ConfigurationProperties(prefix = "lti")
+	public LTITool ltiTool() {
+		return new LTITool();
+	}
 
-    @Bean
-    public FilterRegistrationBean oauth2ClientFilterRegistration(
-            OAuth2ClientContextFilter filter) {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(filter);
-        registration.setOrder(-100);
-        return registration;
-    }
+	@Bean
+	public FilterRegistrationBean oauth2ClientFilterRegistration(
+					OAuth2ClientContextFilter filter) {
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setFilter(filter);
+		registration.setOrder(-100);
+		return registration;
+	}
 
-    @Bean
-    public OpenApiAuthorizedAspect openApiAuthorizedAspect() {
-        final OpenApiAuthorizedAspect openApiAuthorizedAspect = new OpenApiAuthorizedAspect();
-        openApiAuthorizedAspect.setRedirectUri(OPEN_API_URI);
-        return openApiAuthorizedAspect;
-    }
+	@Bean
+	public OpenApiAuthorizedAspect openApiAuthorizedAspect() {
+		final OpenApiAuthorizedAspect openApiAuthorizedAspect = new OpenApiAuthorizedAspect();
+		openApiAuthorizedAspect.setRedirectUri(OPEN_API_URI);
+		return openApiAuthorizedAspect;
+	}
 
-    @Bean
-    public OAuth2RestOperations openApiRestTemplate() {
-        return new OAuth2RestTemplate(openapi(), oauth2ClientContext);
-    }
+	@Bean
+	public OAuth2RestOperations openApiRestTemplate() {
+		return new OAuth2RestTemplate(openapi(), oauth2ClientContext);
+	}
 
 }

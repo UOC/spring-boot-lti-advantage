@@ -1,11 +1,9 @@
 package edu.uoc.elearn.lti.provider.security;
 
-import edu.uoc.lti.LTIEnvironment;
+import edu.uoc.elc.lti.tool.Tool;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -15,54 +13,53 @@ import java.util.List;
  */
 public class LTIBasedPreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
-    public LTIBasedPreAuthenticatedProcessingFilter(List<String> adminUsers, List<String> adminDomainCodes) {
-        super();
-        setAuthenticationDetailsSource(new LTIBasedPreAuthenticatedWebAuthenticationDetailsSource(adminUsers, adminDomainCodes));
-    }
+	private LTITool ltiTool;
 
-    public LTIBasedPreAuthenticatedProcessingFilter() {
-        this(null, null);
-    }
+	public LTIBasedPreAuthenticatedProcessingFilter(List<String> adminUsers, List<String> adminDomainCodes, LTITool ltiTool) {
+		super();
+		this.ltiTool = ltiTool;
+		setAuthenticationDetailsSource(new LTIBasedPreAuthenticatedWebAuthenticationDetailsSource(adminUsers, adminDomainCodes, ltiTool));
+	}
 
-    private String getConfigurationFile() throws URISyntaxException {
-        File file = new File(this.getClass().getResource("/authorizedConsumersKey.properties").toURI());
+	public LTIBasedPreAuthenticatedProcessingFilter() {
+		this(null, null, null);
+	}
 
-        return file.getAbsolutePath();
-    }
+	private String getToken(HttpServletRequest httpServletRequest) {
+		String token = httpServletRequest.getParameter("jwt");
+		if (token == null || "".equals(token)) {
+			token = httpServletRequest.getParameter("id_token");
+		}
+		return token;
+	}
 
-    @Override
-    protected Object getPreAuthenticatedPrincipal(HttpServletRequest httpServletRequest) {
-        LTIEnvironment ltiEnvironment;
-        try {
-            ltiEnvironment = new LTIEnvironment(getConfigurationFile());
-            ltiEnvironment.parseRequest(httpServletRequest);
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Checking if request is a valid LTI");
-            }
-            if (/*ltiEnvironment.is_lti_request(httpServletRequest) && */ltiEnvironment.isAuthenticated()) {
-                this.logger.info("Valid LTI call from " + ltiEnvironment.getUserName());
-                return ltiEnvironment.getUserName() + "-" + ltiEnvironment.getCourseKey();
-            }
-            this.logger.info("The request is not a valid LTI one");
-        } catch (URISyntaxException use) {
-            this.logger.error("Error paring configuration file "+use.getMessage(), use);
-        }
-        return null;
-    }
+	@Override
+	protected Object getPreAuthenticatedPrincipal(HttpServletRequest httpServletRequest) {
+		Tool tool = new Tool(ltiTool.getName(), ltiTool.getClientId(), ltiTool.getKeySetUrl(), ltiTool.getAccessTokenUrl(), ltiTool.getPrivateKey(), ltiTool.getPublicKey());
+		String token = getToken(httpServletRequest);
+		tool.validate(token);
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Checking if request is a valid LTI");
+		}
+		if (tool.isValid()) {
 
-    // Store LTI context in credentials
-    @Override
-    protected Object getPreAuthenticatedCredentials(HttpServletRequest httpServletRequest) {
-        try {
-            LTIEnvironment ltiEnvironment = new LTIEnvironment(getConfigurationFile());
-            ltiEnvironment.parseRequest(httpServletRequest);
-            if (ltiEnvironment.is_lti_request(httpServletRequest) && ltiEnvironment.isAuthenticated()) {
-                return httpServletRequest;
-            }
-        } catch (URISyntaxException use) {
-            this.logger.error("Error paring configuration file "+use.getMessage(), use);
-        }
+			this.logger.info("Valid LTI call from " + tool.getUser().getId());
+			return tool.getUser().getId() + "-" + tool.getContext().getId();
+		}
+		this.logger.info("The request is not a valid LTI one");
+		return null;
+	}
 
-        return "{ N.A. }";
-    }
+	// Store LTI context in credentials
+	@Override
+	protected Object getPreAuthenticatedCredentials(HttpServletRequest httpServletRequest) {
+		Tool tool = new Tool(ltiTool.getName(), ltiTool.getClientId(), ltiTool.getKeySetUrl(), ltiTool.getAccessTokenUrl(), ltiTool.getPrivateKey(), ltiTool.getPublicKey());
+		String token = getToken(httpServletRequest);
+		tool.validate(token);
+		if (tool.isValid()) {
+			return httpServletRequest;
+		}
+
+		return "{ N.A. }";
+	}
 }

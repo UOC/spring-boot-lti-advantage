@@ -1,6 +1,6 @@
 package edu.uoc.elearn.lti.provider.security;
 
-import edu.uoc.lti.LTIEnvironment;
+import edu.uoc.elc.lti.tool.Tool;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
@@ -9,9 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Collection;
 
 /**
@@ -20,36 +17,41 @@ import java.util.Collection;
  * @author xaracil@uoc.edu
  */
 public class LTIAuthenticationUserDetailsService<T extends Authentication> implements AuthenticationUserDetailsService<T> {
+	private LTITool ltiTool;
 
-    private String getConfigurationFile() throws URISyntaxException {
-        File file = new File(this.getClass().getResource("/authorizedConsumersKey.properties").toURI());
+	public LTIAuthenticationUserDetailsService(LTITool ltiTool) {
+		this.ltiTool = ltiTool;
+	}
 
-        return file.getAbsolutePath();
-    }
+	private String getToken(HttpServletRequest httpServletRequest) {
+		String token = httpServletRequest.getParameter("jwt");
+		if (token == null || "".equals(token)) {
+			token = httpServletRequest.getParameter("id_token");
+		}
+		return token;
+	}
 
-    @Override
-    public UserDetails loadUserDetails(Authentication authentication) throws UsernameNotFoundException {
-        if (authentication.getCredentials() instanceof HttpServletRequest) {
-            HttpServletRequest request = (HttpServletRequest) authentication.getCredentials();
-            LTIEnvironment ltiEnvironment;
-            try {
-                ltiEnvironment = new LTIEnvironment(getConfigurationFile());
+	@Override
+	public UserDetails loadUserDetails(Authentication authentication) throws UsernameNotFoundException {
+		if (authentication.getCredentials() instanceof HttpServletRequest) {
+			HttpServletRequest request = (HttpServletRequest) authentication.getCredentials();
+			Tool tool = new Tool(ltiTool.getName(), ltiTool.getClientId(), ltiTool.getKeySetUrl(), ltiTool.getAccessTokenUrl(), ltiTool.getPrivateKey(), ltiTool.getPublicKey());
 
-                ltiEnvironment.parseRequest(request);
-                if (ltiEnvironment.isAuthenticated()) {
-                    Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-                    if (authentication.getDetails() instanceof PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails) {
-                        PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails details = (PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails) authentication.getDetails();
-                        authorities = details.getGrantedAuthorities();
-                    }
+			String token = getToken(request);
+			tool.validate(token);
 
-                    // create user details
-                    return new LTIUserDetails(authentication.getName(), "N. A.", ltiEnvironment, ltiEnvironment.getCustomParameter("sessionid", request), authorities);
-                }
-            } catch (URISyntaxException use) {
-                throw new UsernameNotFoundException("Error paring configuration file "+use.getMessage());
-            }
-        }
-        return null;
-    }
+			if (tool.isValid()) {
+				Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+				if (authentication.getDetails() instanceof PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails) {
+					PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails details = (PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails) authentication.getDetails();
+					authorities = details.getGrantedAuthorities();
+				}
+
+				// create user details
+				String campusSessionId = tool.getCustomParameter("sessionid") != null ? tool.getCustomParameter("sessionid").toString() : null;
+				return new LTIUserDetails(authentication.getName(), "N. A.", tool, campusSessionId, authorities);
+			}
+		}
+		return null;
+	}
 }

@@ -1,6 +1,7 @@
 package edu.uoc.elearn.lti.provider.security;
 
-import edu.uoc.lti.LTIEnvironment;
+import edu.uoc.elc.lti.tool.Context;
+import edu.uoc.elc.lti.tool.Tool;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -9,41 +10,41 @@ import lombok.extern.slf4j.Slf4j;
  * @author xaracil@uoc.edu
  */
 @Slf4j
-class LTICourse {
-    private final LTIEnvironment ltiEnvironment;
+public class LTICourse {
+    private final Tool tool;
+    private final Context ltiContext;
 
-    LTICourse(LTIEnvironment ltiEnvironment) {
-        this.ltiEnvironment = ltiEnvironment;
+    public LTICourse(Tool tool) {
+        this.tool = tool;
+        this.ltiContext = tool.getContext();
     }
 
     public String getName() {
-        return ltiEnvironment.getCourseName();
+        return ltiContext.getLabel();
     }
 
     public String getKey() {
-        String key = ltiEnvironment.getCourseKey();
-        final String[] strings = key.split("_");
-        return strings[strings.length - 1];
+        return ltiContext.getId();
     }
 
     public String getTitle() {
-        return ltiEnvironment.getCourseTitle();
+        return ltiContext.getTitle();
     }
 
     public String getCode() {
-        return ltiEnvironment.getParameter("custom_domain_coditercers");
+        return tool.getCustomParameter("domain_coditercers") != null ? tool.getCustomParameter("domain_coditercers").toString() : null;
     }
 
     public String getSemester() {
-        return ltiEnvironment.getParameter("custom_domain_domainlogofile");
+        return tool.getCustomParameter("domain_domainlogofile") != null ? tool.getCustomParameter("domain_domainlogofile").toString() : null;
     }
 
     public String getCampusCode() {
-        return ltiEnvironment.getParameter("custom_domain_code");
+        return tool.getCustomParameter("domain_code") != null ? tool.getCustomParameter("domain_code").toString() : null;
     }
 
     public String getDomainType() {
-        return ltiEnvironment.getParameter("custom_domain_type");
+        return tool.getCustomParameter("domain_type") != null ? tool.getCustomParameter("domain_type").toString() : null;
     }
 
     public boolean isTutoria() {
