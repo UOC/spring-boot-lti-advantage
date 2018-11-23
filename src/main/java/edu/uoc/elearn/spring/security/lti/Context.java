@@ -1,6 +1,7 @@
 package edu.uoc.elearn.spring.security.lti;
 
 import edu.uoc.elc.lti.tool.Tool;
+import lombok.Getter;
 
 /**
  * Represents a Course from LTI context data
@@ -9,6 +10,7 @@ import edu.uoc.elc.lti.tool.Tool;
  */
 public class Context {
 	private final Tool tool;
+	@Getter
 	private final edu.uoc.elc.lti.tool.Context ltiContext;
 
 
@@ -29,4 +31,7 @@ public class Context {
 		return ltiContext.getTitle();
 	}
 
+	public Object getCustomParameter(String name) {
+		return tool.getCustomParameter(name);
+	}
 }

@@ -6,7 +6,6 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -46,5 +45,9 @@ public class User extends org.springframework.security.core.userdetails.User {
 		} catch (URISyntaxException e) {
 			return null;
 		}
+	}
+
+	public Object getCustomParameter(String name) {
+		return tool.getCustomParameter(name);
 	}
 }
