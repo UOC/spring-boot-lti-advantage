@@ -1,4 +1,4 @@
-package edu.uoc.elearn.lti.provider.security;
+package edu.uoc.elearn.spring.security.lti;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LTITool {
+public class ToolDefinition {
 	private String name;
 	private String clientId;
 	private String keySetUrl;

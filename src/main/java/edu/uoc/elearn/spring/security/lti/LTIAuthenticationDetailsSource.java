@@ -1,4 +1,4 @@
-package edu.uoc.elearn.lti.provider.security;
+package edu.uoc.elearn.spring.security.lti;
 
 import edu.uoc.elc.lti.tool.Tool;
 import org.apache.commons.logging.Log;
@@ -12,32 +12,26 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedG
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * AuthenticationDetailsSource from LTI
  *
  * @author xaracil@uoc.edu
  */
-public class LTIBasedPreAuthenticatedWebAuthenticationDetailsSource implements AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> {
+public class LTIAuthenticationDetailsSource implements AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> {
 	private final Log logger = LogFactory.getLog(this.getClass());
 
 	private final Attributes2GrantedAuthoritiesMapper ltiUserRoles2GrantedAuthoritiesMapper = new SimpleAttributes2GrantedAuthoritiesMapper();
 
-	private final List<String> adminUsers;
+	private final ToolDefinition toolDefinition;
 
-	private final List<String> adminDomainCodes;
 
-	private final LTITool ltiTool;
-
-	public LTIBasedPreAuthenticatedWebAuthenticationDetailsSource() {
-		this(null, null, null);
+	public LTIAuthenticationDetailsSource() {
+		this(null);
 	}
 
-	public LTIBasedPreAuthenticatedWebAuthenticationDetailsSource(List<String> adminUsers, List<String> adminDomainCodes, LTITool ltiTool) {
-		this.adminUsers = adminUsers;
-		this.adminDomainCodes = adminDomainCodes;
-		this.ltiTool = ltiTool;
+	public LTIAuthenticationDetailsSource(ToolDefinition toolDefinition) {
+		this.toolDefinition = toolDefinition;
 	}
 
 	private String getToken(HttpServletRequest httpServletRequest) {
@@ -52,7 +46,7 @@ public class LTIBasedPreAuthenticatedWebAuthenticationDetailsSource implements A
 	private Collection<String> getUserRoles(HttpServletRequest request) {
 		ArrayList<String> ltiUserRolesList = new ArrayList<>();
 
-		Tool tool = new Tool(ltiTool.getName(), ltiTool.getClientId(), ltiTool.getKeySetUrl(), ltiTool.getAccessTokenUrl(), ltiTool.getPrivateKey(), ltiTool.getPublicKey());
+		Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 		String token = getToken(request);
 		tool.validate(token);
 
@@ -101,6 +95,7 @@ public class LTIBasedPreAuthenticatedWebAuthenticationDetailsSource implements A
 		return ltiUserRolesList;
 	}
 
+	/*
 	private boolean isAdmin(String userName, String customUserName, String domainCode) {
 		// super admin case
 		if ("admin".equals(userName) || "admin".equals(customUserName)) {
@@ -118,7 +113,7 @@ public class LTIBasedPreAuthenticatedWebAuthenticationDetailsSource implements A
 		}
 
 		return false;
-	}
+	}*/
 
 	@Override
 	public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails buildDetails(HttpServletRequest httpServletRequest) {

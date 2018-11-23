@@ -1,4 +1,4 @@
-package edu.uoc.elearn.lti.provider.security;
+package edu.uoc.elearn.spring.security.lti;
 
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.lti.platform.AccessTokenResponse;

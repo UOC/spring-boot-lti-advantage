@@ -1,5 +1,7 @@
-package edu.uoc.elearn.lti.provider.security;
+package edu.uoc.elearn.spring.security.lti.mvc;
 
+import edu.uoc.elearn.spring.security.lti.Context;
+import edu.uoc.elearn.spring.security.lti.User;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -15,20 +17,20 @@ import java.security.Principal;
  * @author Xavi Aracil <xaracil@uoc.edu>
  */
 @Component
-public class CurrentCourseHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
+public class CurrentContextHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 	@Override
 	public boolean supportsParameter(MethodParameter methodParameter) {
-		return methodParameter.getParameterType().equals(LTICourse.class);
+		return methodParameter.getParameterType().equals(Context.class);
 	}
 
 	@Override
-	public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
+	public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory)  {
 		if (this.supportsParameter(methodParameter)) {
 			Principal principal = nativeWebRequest.getUserPrincipal();
 			if (principal != null) {
-				LTIUserDetails user = (LTIUserDetails) ((Authentication) principal).getPrincipal();
+				User user = (User) ((Authentication) principal).getPrincipal();
 				if (user != null) {
-					return user.getCourse();
+					return user.getContext();
 				}
 			}
 		}

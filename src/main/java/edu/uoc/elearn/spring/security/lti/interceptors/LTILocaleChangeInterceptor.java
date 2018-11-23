@@ -1,7 +1,9 @@
-package edu.uoc.elearn.lti.provider.security;
+package edu.uoc.elearn.spring.security.lti.interceptors;
 
 import edu.uoc.elc.lti.tool.Tool;
-import lombok.extern.slf4j.Slf4j;
+import edu.uoc.elearn.spring.security.lti.ToolDefinition;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -14,13 +16,13 @@ import java.util.Locale;
  * Custom LocaleChangeInterceptor for setting the locale from LTI
  * Created by xavi on 23/9/16.
  */
-@Slf4j
 public class LTILocaleChangeInterceptor extends HandlerInterceptorAdapter {
+	protected final Log logger = LogFactory.getLog(this.getClass());
 
-	private LTITool ltiTool;
+	private ToolDefinition toolDefinition;
 
-	public LTILocaleChangeInterceptor(LTITool ltiTool) {
-		this.ltiTool = ltiTool;
+	public LTILocaleChangeInterceptor(ToolDefinition toolDefinition) {
+		this.toolDefinition = toolDefinition;
 	}
 
 	private String getToken(HttpServletRequest httpServletRequest) {
@@ -33,12 +35,11 @@ public class LTILocaleChangeInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-		Tool tool = new Tool(ltiTool.getName(), ltiTool.getClientId(), ltiTool.getKeySetUrl(), ltiTool.getAccessTokenUrl(), ltiTool.getPrivateKey(), ltiTool.getPublicKey());
+		Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 		String token = getToken(request);
 		tool.validate(token);
 		if (tool.isValid()) {
 			String newLocale = tool.getLocale();
-			log.info(newLocale);
 			if (newLocale != null) {
 				LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
 				if (localeResolver == null) {
@@ -47,7 +48,9 @@ public class LTILocaleChangeInterceptor extends HandlerInterceptorAdapter {
 
 				final String[] languangeAndCountry = newLocale.split("-");
 				if (languangeAndCountry.length == 2) {
-					log.info("Setting locale to " + newLocale);
+					if (this.logger.isDebugEnabled()) {
+						this.logger.debug("Setting locale to " + newLocale);
+					}
 					localeResolver.setLocale(request, response, new Locale(languangeAndCountry[0], languangeAndCountry[1]));
 				}
 			}

@@ -1,7 +1,9 @@
 package edu.uoc.elearn.lti.provider.controller;
 
 import edu.uoc.elc.lti.platform.Member;
-import edu.uoc.elearn.lti.provider.security.*;
+import edu.uoc.elearn.spring.security.lti.Context;
+import edu.uoc.elearn.spring.security.lti.ToolProvider;
+import edu.uoc.elearn.spring.security.lti.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -21,24 +23,22 @@ public class MainController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public String init(LTIUserDetails user, LTICourse course, SpringLTIToolProvider toolProvider) throws IOException {
-		return render_home(user, course, toolProvider);
+	public String init(User user, Context context, ToolProvider toolProvider) throws IOException {
+		return render_home(user, context, toolProvider);
 	}
-
-
 
 	/**
 	 * Renders a home with requested data
 	 *
 	 * @return
 	 */
-	private String render_home(LTIUserDetails user, LTICourse course, SpringLTIToolProvider toolProvider) throws IOException {
+	private String render_home(User user, Context context, ToolProvider toolProvider) throws IOException {
 
 		StringBuilder ret = new StringBuilder("<h1>Parameters:</h1>");
 		ret.append("<ul>");
 		ret.append("<li>Fullname: " + user.getUsername() + "</li>");
-		ret.append("<li>Course Code " + course.getKey() + "</li>");
-		ret.append("<li>Course Title " + course.getTitle() + "</li>");
+		ret.append("<li>Course Code " + context.getKey() + "</li>");
+		ret.append("<li>Course Title " + context.getTitle() + "</li>");
 		ret.append("</ul>");
 
 		// add members

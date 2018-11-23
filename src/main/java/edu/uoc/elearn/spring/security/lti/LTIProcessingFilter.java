@@ -1,28 +1,27 @@
-package edu.uoc.elearn.lti.provider.security;
+package edu.uoc.elearn.spring.security.lti;
 
 import edu.uoc.elc.lti.tool.Tool;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * LTI Pre Auth filter. Tries to perform a preauth using LTI validation
  *
  * @author xaracil@uoc.edu
  */
-public class LTIBasedPreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
+public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
-	private LTITool ltiTool;
+	private ToolDefinition toolDefinition;
 
-	public LTIBasedPreAuthenticatedProcessingFilter(List<String> adminUsers, List<String> adminDomainCodes, LTITool ltiTool) {
+	public LTIProcessingFilter(ToolDefinition toolDefinition) {
 		super();
-		this.ltiTool = ltiTool;
-		setAuthenticationDetailsSource(new LTIBasedPreAuthenticatedWebAuthenticationDetailsSource(adminUsers, adminDomainCodes, ltiTool));
+		this.toolDefinition = toolDefinition;
+		setAuthenticationDetailsSource(new LTIAuthenticationDetailsSource(toolDefinition));
 	}
 
-	public LTIBasedPreAuthenticatedProcessingFilter() {
-		this(null, null, null);
+	public LTIProcessingFilter() {
+		this(null);
 	}
 
 	private String getToken(HttpServletRequest httpServletRequest) {
@@ -35,7 +34,7 @@ public class LTIBasedPreAuthenticatedProcessingFilter extends AbstractPreAuthent
 
 	@Override
 	protected Object getPreAuthenticatedPrincipal(HttpServletRequest httpServletRequest) {
-		Tool tool = new Tool(ltiTool.getName(), ltiTool.getClientId(), ltiTool.getKeySetUrl(), ltiTool.getAccessTokenUrl(), ltiTool.getPrivateKey(), ltiTool.getPublicKey());
+		Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 		String token = getToken(httpServletRequest);
 		tool.validate(token);
 		if (this.logger.isDebugEnabled()) {
@@ -53,7 +52,7 @@ public class LTIBasedPreAuthenticatedProcessingFilter extends AbstractPreAuthent
 	// Store LTI context in credentials
 	@Override
 	protected Object getPreAuthenticatedCredentials(HttpServletRequest httpServletRequest) {
-		Tool tool = new Tool(ltiTool.getName(), ltiTool.getClientId(), ltiTool.getKeySetUrl(), ltiTool.getAccessTokenUrl(), ltiTool.getPrivateKey(), ltiTool.getPublicKey());
+		Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 		String token = getToken(httpServletRequest);
 		tool.validate(token);
 		if (tool.isValid()) {

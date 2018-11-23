@@ -1,4 +1,4 @@
-package edu.uoc.elearn.lti.provider.security;
+package edu.uoc.elearn.spring.security.lti;
 
 import edu.uoc.elc.lti.tool.Tool;
 import org.springframework.security.core.Authentication;
@@ -17,10 +17,10 @@ import java.util.Collection;
  * @author xaracil@uoc.edu
  */
 public class LTIAuthenticationUserDetailsService<T extends Authentication> implements AuthenticationUserDetailsService<T> {
-	private LTITool ltiTool;
+	private ToolDefinition toolDefinition;
 
-	public LTIAuthenticationUserDetailsService(LTITool ltiTool) {
-		this.ltiTool = ltiTool;
+	public LTIAuthenticationUserDetailsService(ToolDefinition toolDefinition) {
+		this.toolDefinition = toolDefinition;
 	}
 
 	private String getToken(HttpServletRequest httpServletRequest) {
@@ -35,7 +35,7 @@ public class LTIAuthenticationUserDetailsService<T extends Authentication> imple
 	public UserDetails loadUserDetails(Authentication authentication) throws UsernameNotFoundException {
 		if (authentication.getCredentials() instanceof HttpServletRequest) {
 			HttpServletRequest request = (HttpServletRequest) authentication.getCredentials();
-			Tool tool = new Tool(ltiTool.getName(), ltiTool.getClientId(), ltiTool.getKeySetUrl(), ltiTool.getAccessTokenUrl(), ltiTool.getPrivateKey(), ltiTool.getPublicKey());
+			Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 
 			String token = getToken(request);
 			tool.validate(token);
@@ -48,8 +48,7 @@ public class LTIAuthenticationUserDetailsService<T extends Authentication> imple
 				}
 
 				// create user details
-				String campusSessionId = tool.getCustomParameter("sessionid") != null ? tool.getCustomParameter("sessionid").toString() : null;
-				return new LTIUserDetails(authentication.getName(), "N. A.", tool, campusSessionId, authorities);
+				return new User(authentication.getName(), "N. A.", tool, authorities);
 			}
 		}
 		return null;
