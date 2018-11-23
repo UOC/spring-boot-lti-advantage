@@ -24,6 +24,7 @@ public class LTIAuthenticationDetailsSource implements AuthenticationDetailsSour
 	private final Attributes2GrantedAuthoritiesMapper ltiUserRoles2GrantedAuthoritiesMapper = new SimpleAttributes2GrantedAuthoritiesMapper();
 
 	private final ToolDefinition toolDefinition;
+	protected final Tool tool;
 
 
 	public LTIAuthenticationDetailsSource() {
@@ -32,6 +33,7 @@ public class LTIAuthenticationDetailsSource implements AuthenticationDetailsSour
 
 	public LTIAuthenticationDetailsSource(ToolDefinition toolDefinition) {
 		this.toolDefinition = toolDefinition;
+		this.tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 	}
 
 	private String getToken(HttpServletRequest httpServletRequest) {
@@ -43,10 +45,9 @@ public class LTIAuthenticationDetailsSource implements AuthenticationDetailsSour
 	}
 
 
-	private Collection<String> getUserRoles(HttpServletRequest request) {
+	protected Collection<String> getUserRoles(HttpServletRequest request) {
 		ArrayList<String> ltiUserRolesList = new ArrayList<>();
 
-		Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 		String token = getToken(request);
 		tool.validate(token);
 
@@ -55,65 +56,15 @@ public class LTIAuthenticationDetailsSource implements AuthenticationDetailsSour
 		}
 
 		if (tool.isLearner()) {
-			ltiUserRolesList.add("STUDENT");
+			ltiUserRolesList.add("LEARNER");
 		}
 
 		if (tool.isInstructor()) {
 			ltiUserRolesList.add("INSTRUCTOR");
-			// TODO: do the UOC's specific stuff
 		}
-
-        /*
-        if (ltiEnvironment.isCourseAuthorized() && !ltiEnvironment.isInstructor()) {
-            ltiUserRolesList.add("STUDENT");
-        }
-        if (ltiEnvironment.isInstructor()) {
-            String specificRolesParam = ltiEnvironment.getCustomParameter("specific_role", request);
-            List<String> specificRoles = specificRolesParam != null ? Arrays.asList(specificRolesParam.split(",")) : null;
-            if ("TUTORIA".equals(ltiEnvironment.getCustomParameter("domain_typeid", request))) {
-                ltiUserRolesList.add("TUTOR");
-
-                // check if we're assigned as ADMINISTRACIO
-                if (specificRoles != null && specificRoles.contains("ADMINISTRACIO")) {
-                    ltiUserRolesList.add("TUTOR_ADMIN");
-                }
-            } else {
-
-                // PRA
-                if (specificRoles != null && specificRoles.contains("CREADOR")) {
-                    ltiUserRolesList.add("PRA");
-                } else {
-                    ltiUserRolesList.add("INSTRUCTOR");
-                }
-            }
-        }
-
-        if (isAdmin(ltiEnvironment.getUserName(), ltiEnvironment.getCustomParameter("username", request), ltiEnvironment.getCustomParameter("domain_code", request))) {
-            ltiUserRolesList.add("ADMIN");
-        }*/
 
 		return ltiUserRolesList;
 	}
-
-	/*
-	private boolean isAdmin(String userName, String customUserName, String domainCode) {
-		// super admin case
-		if ("admin".equals(userName) || "admin".equals(customUserName)) {
-			return true;
-		}
-
-		if (this.adminDomainCodes != null) {
-			if (this.adminDomainCodes.contains(domainCode)) {
-				return true;
-			}
-			;
-		}
-		if (this.adminUsers != null) {
-			return this.adminUsers.contains(userName) || this.adminUsers.contains(customUserName);
-		}
-
-		return false;
-	}*/
 
 	@Override
 	public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails buildDetails(HttpServletRequest httpServletRequest) {
