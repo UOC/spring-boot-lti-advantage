@@ -12,17 +12,16 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
-	private ToolDefinition toolDefinition;
+	private final ToolDefinition toolDefinition;
+	private final Tool tool;
 
 	public LTIProcessingFilter(ToolDefinition toolDefinition) {
 		super();
 		this.toolDefinition = toolDefinition;
+		this.tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 		setAuthenticationDetailsSource(new LTIAuthenticationDetailsSource(toolDefinition));
 	}
 
-	public LTIProcessingFilter() {
-		this(null);
-	}
 
 	private String getToken(HttpServletRequest httpServletRequest) {
 		String token = httpServletRequest.getParameter("jwt");
@@ -34,7 +33,6 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 
 	@Override
 	protected Object getPreAuthenticatedPrincipal(HttpServletRequest httpServletRequest) {
-		Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 		String token = getToken(httpServletRequest);
 		tool.validate(token);
 		if (this.logger.isDebugEnabled()) {
@@ -52,7 +50,6 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 	// Store LTI context in credentials
 	@Override
 	protected Object getPreAuthenticatedCredentials(HttpServletRequest httpServletRequest) {
-		Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 		String token = getToken(httpServletRequest);
 		tool.validate(token);
 		if (tool.isValid()) {
