@@ -101,16 +101,4 @@ public class LTIUserDetails extends User {
 
     }*/
 
-    /*
-    public List<org.oscelot.lti.tp.User> getMembers() {
-        ToolProvider tool = tool.getTool();
-        if (tool != null) {
-            ResourceLink resourceLink = tool.getResourceLink();
-            if (resourceLink.hasMembershipsService()) {
-                return resourceLink.doMembershipsService(false);
-            }
-        }
-
-        return new ArrayList<>();
-    }*/
 }
