@@ -1,6 +1,8 @@
 package edu.uoc.elearn.lti.provider.controller;
 
 import edu.uoc.elc.lti.platform.Member;
+import edu.uoc.elearn.lti.provider.security.UOCContext;
+import edu.uoc.elearn.lti.provider.security.UOCUser;
 import edu.uoc.elearn.spring.security.lti.Context;
 import edu.uoc.elearn.spring.security.lti.ToolProvider;
 import edu.uoc.elearn.spring.security.lti.User;
@@ -23,7 +25,7 @@ public class MainController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public String init(User user, Context context, ToolProvider toolProvider) throws IOException {
+	public String init(UOCUser user, UOCContext context, ToolProvider toolProvider) throws IOException {
 		return render_home(user, context, toolProvider);
 	}
 
@@ -32,7 +34,7 @@ public class MainController {
 	 *
 	 * @return
 	 */
-	private String render_home(User user, Context context, ToolProvider toolProvider) throws IOException {
+	private String render_home(UOCUser user, UOCContext context, ToolProvider toolProvider) throws IOException {
 
 		StringBuilder ret = new StringBuilder("<h1>Parameters:</h1>");
 		ret.append("<ul>");

@@ -1,11 +1,13 @@
 package edu.uoc.elearn.lti.provider.config;
 
-import edu.uoc.elearn.spring.security.lti.LTIApplicationSecurity;
+import edu.uoc.elearn.lti.provider.security.UOCLTIApplicationSecurity;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 @Configuration
-public class ApplicationSecurity extends LTIApplicationSecurity {
+@Order(80)
+public class ApplicationSecurity extends UOCLTIApplicationSecurity {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		super.configure(http);
