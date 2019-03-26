@@ -2,6 +2,7 @@ package edu.uoc.elearn.spring.security.lti.interceptors;
 
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elearn.spring.security.lti.ToolDefinition;
+import edu.uoc.elearn.spring.security.lti.utils.RequestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.LocaleResolver;
@@ -25,18 +26,10 @@ public class LTILocaleChangeInterceptor extends HandlerInterceptorAdapter {
 		this.toolDefinition = toolDefinition;
 	}
 
-	private String getToken(HttpServletRequest httpServletRequest) {
-		String token = httpServletRequest.getParameter("jwt");
-		if (token == null || "".equals(token)) {
-			token = httpServletRequest.getParameter("id_token");
-		}
-		return token;
-	}
-
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 		Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
-		String token = getToken(request);
+		String token = RequestUtils.getToken(request);
 		tool.validate(token);
 		if (tool.isValid()) {
 			String newLocale = tool.getLocale();

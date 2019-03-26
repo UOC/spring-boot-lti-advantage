@@ -1,6 +1,7 @@
 package edu.uoc.elearn.spring.security.lti;
 
 import edu.uoc.elc.lti.tool.Tool;
+import edu.uoc.elearn.spring.security.lti.utils.RequestUtils;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,18 +23,9 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 		setAuthenticationDetailsSource(new LTIAuthenticationDetailsSource(toolDefinition));
 	}
 
-
-	private String getToken(HttpServletRequest httpServletRequest) {
-		String token = httpServletRequest.getParameter("jwt");
-		if (token == null || "".equals(token)) {
-			token = httpServletRequest.getParameter("id_token");
-		}
-		return token;
-	}
-
 	@Override
 	protected Object getPreAuthenticatedPrincipal(HttpServletRequest httpServletRequest) {
-		String token = getToken(httpServletRequest);
+		String token = RequestUtils.getToken(httpServletRequest);
 		tool.validate(token);
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Checking if request is a valid LTI");
@@ -50,7 +42,7 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 	// Store LTI context in credentials
 	@Override
 	protected Object getPreAuthenticatedCredentials(HttpServletRequest httpServletRequest) {
-		String token = getToken(httpServletRequest);
+		String token = RequestUtils.getToken(httpServletRequest);
 		tool.validate(token);
 		if (tool.isValid()) {
 			return httpServletRequest;

@@ -1,6 +1,7 @@
 package edu.uoc.elearn.spring.security.lti;
 
 import edu.uoc.elc.lti.tool.Tool;
+import edu.uoc.elearn.spring.security.lti.utils.RequestUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
@@ -23,21 +24,13 @@ public class LTIAuthenticationUserDetailsService<T extends Authentication> imple
 		this.toolDefinition = toolDefinition;
 	}
 
-	private String getToken(HttpServletRequest httpServletRequest) {
-		String token = httpServletRequest.getParameter("jwt");
-		if (token == null || "".equals(token)) {
-			token = httpServletRequest.getParameter("id_token");
-		}
-		return token;
-	}
-
 	@Override
 	public UserDetails loadUserDetails(Authentication authentication) throws UsernameNotFoundException {
 		if (authentication.getCredentials() instanceof HttpServletRequest) {
 			HttpServletRequest request = (HttpServletRequest) authentication.getCredentials();
 			Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 
-			String token = getToken(request);
+			String token = RequestUtils.getToken(request);
 			tool.validate(token);
 
 			if (tool.isValid()) {
