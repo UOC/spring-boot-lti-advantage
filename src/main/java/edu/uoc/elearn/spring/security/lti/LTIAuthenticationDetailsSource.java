@@ -1,6 +1,7 @@
 package edu.uoc.elearn.spring.security.lti;
 
 import edu.uoc.elc.lti.tool.Tool;
+import edu.uoc.elearn.spring.security.lti.tool.ToolDefinition;
 import edu.uoc.elearn.spring.security.lti.utils.RequestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

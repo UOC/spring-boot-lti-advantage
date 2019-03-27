@@ -1,9 +1,8 @@
 package edu.uoc.elearn.spring.security.lti;
 
+import edu.uoc.elearn.spring.security.lti.tool.ToolDefinition;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -16,7 +15,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
  * @author Xavi Aracil <xaracil@uoc.edu>
  */
 @Configuration
-@ComponentScan("edu.uoc.elearn.spring.security.lti.mvc")
+@ComponentScan(value = {"edu.uoc.elearn.spring.security.lti.mvc", "edu.uoc.elearn.spring.security.lti.tool"})
 public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	@Getter
 	@Autowired
@@ -43,11 +42,5 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 		authenticationProvider.setPreAuthenticatedUserDetailsService(new LTIAuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>(toolDefinition));
 
 		auth.authenticationProvider(authenticationProvider);
-	}
-
-	@Bean
-	@ConfigurationProperties(prefix = "lti")
-	public ToolDefinition ltiTool() {
-		return new ToolDefinition();
 	}
 }
