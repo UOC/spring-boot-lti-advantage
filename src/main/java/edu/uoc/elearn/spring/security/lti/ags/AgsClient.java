@@ -188,6 +188,6 @@ public class AgsClient implements edu.uoc.elc.lti.platform.ags.AgsClient {
 		String uri = String.format( "%s/scores", lineItemId);
 
 		restTemplate.postForLocation(uri, score);
-		return false;
+		return true;
 	}
 }

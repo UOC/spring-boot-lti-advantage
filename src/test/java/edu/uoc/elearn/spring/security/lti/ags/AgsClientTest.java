@@ -3,6 +3,7 @@ package edu.uoc.elearn.spring.security.lti.ags;
 import edu.uoc.elc.lti.platform.ags.LineItem;
 import edu.uoc.elc.lti.platform.ags.Result;
 import edu.uoc.elc.lti.platform.ags.ResultContainer;
+import edu.uoc.elc.lti.platform.ags.Score;
 import edu.uoc.elc.lti.tool.AssignmentGradeService;
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elearn.Config;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -239,7 +242,6 @@ public class AgsClientTest {
 		Assert.assertEquals(afterSize, previousSize);
 	}
 
-
 	@Test
 	public void getResults() {
 		Mockito.when(this.assignmentGradeService.canReadGrades()).thenReturn(true);
@@ -247,5 +249,40 @@ public class AgsClientTest {
 		final LineItem newLineItem = createAndAssertNewLineItem();
 		final List<Result> lineItemResults = this.sut.getLineItemResults(newLineItem.getId(), null, null, null);
 		Assert.assertNotNull(lineItemResults);
+	}
+
+	@Test
+	public void score() {
+		Mockito.when(this.assignmentGradeService.canScore()).thenReturn(true);
+		Mockito.when(this.assignmentGradeService.canReadGrades()).thenReturn(true);
+
+		final LineItem newLineItem = createAndAssertNewLineItem();
+		final List<Result> previousLineItemResults = this.sut.getLineItemResults(newLineItem.getId(), null, null, null);
+		Assert.assertNotNull(previousLineItemResults);
+		int previousSize = previousLineItemResults.size();
+
+		final Instant now = Instant.now();
+
+		// create a score
+		final Score score = Score.builder()
+						.userId("1ad4b33a2579a2a98ed7")
+						.scoreGiven(0.5)
+						.scoreMaximum(1.0)
+						.comment("comment")
+						.timeStamp(now.toString())
+						.activityProgress("Completed")
+						.gradingProgress("PendingManual")
+						.build();
+
+
+		final boolean result = this.sut.score(newLineItem.getId(), score);
+		Assert.assertTrue(result);
+		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canScore();
+
+		final List<Result> afterLineItemResults = this.sut.getLineItemResults(newLineItem.getId(), null, null, null);
+		Assert.assertNotNull(afterLineItemResults);
+		int afterSize = afterLineItemResults.size();
+		Assert.assertTrue(afterSize == previousSize + 1);
+
 	}
 }
