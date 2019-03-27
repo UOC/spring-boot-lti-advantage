@@ -150,6 +150,12 @@ public class AgsClientTest {
 		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canReadLineItems();
 	}
 
+	private void assertNewLineItem(LineItem expected, LineItem actual) {
+		Assert.assertNotNull(actual);
+		Assert.assertNotNull(actual.getId());
+		assertEquals(expected, actual, false);
+		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canManageLineItems();
+	}
 	private void assertEquals(LineItem expected, LineItem actual) {
 		assertEquals(expected, actual, true);
 	}
@@ -166,27 +172,27 @@ public class AgsClientTest {
 		Assert.assertEquals(expected.getSubmission(), actual.getSubmission());
 	}
 
+	private int lineItemsSize() {
+		// get previous line items
+		final List<LineItem> lineItems = this.sut.getLineItems(null, null, null, null, null);
+		Assert.assertNotNull(lineItems);
+		return lineItems.size();
+	}
+
 	@Test
 	public void createLineItem() {
 		setUpLineItem();
 
 		// get previous line items
-		final List<LineItem> previousLineItems = this.sut.getLineItems(null, null, null, null, null);
-		Assert.assertNotNull(previousLineItems);
-		final int previousSize = previousLineItems.size();
+		final int previousSize = lineItemsSize();
 
 		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
 
 		final LineItem newLineItem = this.sut.createLineItem(lineItem);
-		Assert.assertNotNull(newLineItem);
-		Assert.assertNotNull(newLineItem.getId());
-		assertEquals(lineItem, newLineItem, false);
-		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canManageLineItems();
+		assertNewLineItem(lineItem, newLineItem);
 
 		// get after line items
-		final List<LineItem> afterLineItems = this.sut.getLineItems(null, null, null, null, null);
-		Assert.assertNotNull(afterLineItems);
-		final int afterSize = afterLineItems.size();
+		final int afterSize = lineItemsSize();
 		Assert.assertTrue(afterSize == previousSize + 1);
 	}
 
@@ -196,9 +202,7 @@ public class AgsClientTest {
 
 		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
 		final LineItem newLineItem = this.sut.createLineItem(lineItem);
-		Assert.assertNotNull(newLineItem);
-		Assert.assertNotNull(newLineItem.getId());
-		assertEquals(lineItem, newLineItem, false);
+		assertNewLineItem(lineItem, newLineItem);
 
 		final LineItem gottenLineItem = this.sut.getLineItem(newLineItem.getId());
 		Assert.assertNotNull(gottenLineItem);
@@ -211,9 +215,7 @@ public class AgsClientTest {
 
 		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
 		final LineItem newLineItem = this.sut.createLineItem(lineItem);
-		Assert.assertNotNull(newLineItem);
-		Assert.assertNotNull(newLineItem.getId());
-		assertEquals(lineItem, newLineItem, false);
+		assertNewLineItem(lineItem, newLineItem);
 
 		newLineItem.setLabel("Modified Label");
 		final LineItem modifiedLineItem = this.sut.updateLineItem(newLineItem.getId(), newLineItem);
@@ -226,29 +228,21 @@ public class AgsClientTest {
 		setUpLineItem();
 
 		// get previous line items
-		final List<LineItem> previousLineItems = this.sut.getLineItems(null, null, null, null, null);
-		Assert.assertNotNull(previousLineItems);
-		final int previousSize = previousLineItems.size();
+		final int previousSize = lineItemsSize();
 
 		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
 		final LineItem newLineItem = this.sut.createLineItem(lineItem);
-		Assert.assertNotNull(newLineItem);
-		Assert.assertNotNull(newLineItem.getId());
-		assertEquals(lineItem, newLineItem, false);
+		assertNewLineItem(lineItem, newLineItem);
 
 		// get after line items
-		List<LineItem> afterLineItems = this.sut.getLineItems(null, null, null, null, null);
-		Assert.assertNotNull(afterLineItems);
-		int afterSize = afterLineItems.size();
+		int afterSize = lineItemsSize();
 		Assert.assertTrue(afterSize == previousSize + 1);
 
 		// delete line item
 		this.sut.deleteLineItem(newLineItem.getId());
 
 		// get after line items
-		afterLineItems = this.sut.getLineItems(null, null, null, null, null);
-		Assert.assertNotNull(afterLineItems);
-		afterSize = afterLineItems.size();
+		afterSize = lineItemsSize();
 		Assert.assertEquals(afterSize, previousSize);
 	}
 }
