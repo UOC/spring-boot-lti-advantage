@@ -103,8 +103,7 @@ public class AgsClient implements edu.uoc.elc.lti.platform.ags.AgsClient {
 			throw new MethodNotAllowedException("GET", null);
 		}
 
-		String lineItemUrl = assignmentGradeService.getLineitems() + String.format( "/%s", id);
-		return restTemplate.getForObject(lineItemUrl, LineItem.class);
+		return restTemplate.getForObject(id, LineItem.class);
 	}
 
 	/**
@@ -119,8 +118,7 @@ public class AgsClient implements edu.uoc.elc.lti.platform.ags.AgsClient {
 			throw new MethodNotAllowedException("PUT", null);
 		}
 
-		String lineItemUrl = assignmentGradeService.getLineitems() + String.format( "/%s", id);
-		ResponseEntity<LineItem> responseEntity = restTemplate.exchange(lineItemUrl,
+		ResponseEntity<LineItem> responseEntity = restTemplate.exchange(id,
 						HttpMethod.PUT,
 						new HttpEntity<>(lineItem),
 						new ParameterizedTypeReference<LineItem>() {});
@@ -138,8 +136,7 @@ public class AgsClient implements edu.uoc.elc.lti.platform.ags.AgsClient {
 			throw new MethodNotAllowedException("DELETE", null);
 		}
 
-		String lineItemUrl = assignmentGradeService.getLineitems() + String.format( "/%s", id);
-		restTemplate.delete(lineItemUrl);
+		restTemplate.delete(id);
 	}
 
 	/**
@@ -166,7 +163,7 @@ public class AgsClient implements edu.uoc.elc.lti.platform.ags.AgsClient {
 			throw new RuntimeException(e);
 		}
 
-		String path = assignmentGradeService.getLineitems() + String.format( "/%s/results", id);
+		String path = String.format( "%s/results", id);
 		String uri = path + (!StringUtils.isEmpty(query) ? "?" + query : "");
 
 		return restTemplate.getForObject(uri, ResultContainer.class);
@@ -183,7 +180,7 @@ public class AgsClient implements edu.uoc.elc.lti.platform.ags.AgsClient {
 		if (!canScore()) {
 			throw new MethodNotAllowedException("POST", null);
 		}
-		String uri = assignmentGradeService.getLineitems() + String.format( "/%s/scores", lineItemId);
+		String uri = String.format( "%s/scores", lineItemId);
 
 		restTemplate.postForLocation(uri, score);
 		return false;

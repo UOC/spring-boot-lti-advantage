@@ -6,6 +6,7 @@ import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elearn.Config;
 import edu.uoc.elearn.spring.security.lti.tool.ToolDefinition;
 import edu.uoc.elearn.spring.security.lti.tool.ToolProvider;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +52,36 @@ public class AgsClientTest {
 		Assert.assertNotNull(toolProvider);
 		this.sut = toolProvider.getAssignmentAndGradeService();
 		Assert.assertNotNull(sut);
+	}
+
+	private static final String TEST_LABEL = "Test Label";
+	private static final String TEST_TAG = "test";
+	private static final Double TEST_SCORE_MAXIMUM = 1.0;
+
+	@After
+	public void tearDown() {
+		// delete all test lineItems
+		Mockito.when(this.assignmentGradeService.canManageLineItems()).thenReturn(true);
+		Mockito.when(this.assignmentGradeService.canReadLineItems()).thenReturn(true);
+		final List<LineItem> lineItems = this.sut.getLineItems(null, null, null, null, null);
+		for (LineItem lineItem : lineItems) {
+			if (TEST_LABEL.equals(lineItem.getLabel()) || TEST_TAG.equals(lineItem.getTag())) {
+				this.sut.deleteLineItem(lineItem.getId());
+			}
+		}
+	}
+
+	private LineItem lineItem(String label, double scoreMaximum) {
+		LineItem lineItem = new LineItem();
+		lineItem.setLabel(label);
+		lineItem.setScoreMaximum(scoreMaximum);
+		lineItem.setTag(TEST_TAG);
+		return lineItem;
+	}
+
+	private void setUpLineItem() {
+		Mockito.when(this.assignmentGradeService.canManageLineItems()).thenReturn(true);
+		Mockito.when(this.assignmentGradeService.canReadLineItems()).thenReturn(true);
 	}
 
 	@Test
@@ -117,6 +148,107 @@ public class AgsClientTest {
 		Assert.assertNotNull(lineItems);
 
 		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canReadLineItems();
+	}
 
+	private void assertEquals(LineItem expected, LineItem actual) {
+		assertEquals(expected, actual, true);
+	}
+
+	private void assertEquals(LineItem expected, LineItem actual, boolean assertId) {
+		if (assertId) {
+			Assert.assertEquals(expected.getId(), actual.getId());
+		}
+		Assert.assertEquals(expected.getLabel(), actual.getLabel());
+		Assert.assertEquals(expected.getScoreMaximum(), actual.getScoreMaximum(), 0);
+		Assert.assertEquals(expected.getTag(), actual.getTag());
+		Assert.assertEquals(expected.getResourceId(), actual.getResourceId());
+		Assert.assertEquals(expected.getResourceLinkId(), actual.getResourceLinkId());
+		Assert.assertEquals(expected.getSubmission(), actual.getSubmission());
+	}
+
+	@Test
+	public void createLineItem() {
+		setUpLineItem();
+
+		// get previous line items
+		final List<LineItem> previousLineItems = this.sut.getLineItems(null, null, null, null, null);
+		Assert.assertNotNull(previousLineItems);
+		final int previousSize = previousLineItems.size();
+
+		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
+
+		final LineItem newLineItem = this.sut.createLineItem(lineItem);
+		Assert.assertNotNull(newLineItem);
+		Assert.assertNotNull(newLineItem.getId());
+		assertEquals(lineItem, newLineItem, false);
+		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canManageLineItems();
+
+		// get after line items
+		final List<LineItem> afterLineItems = this.sut.getLineItems(null, null, null, null, null);
+		Assert.assertNotNull(afterLineItems);
+		final int afterSize = afterLineItems.size();
+		Assert.assertTrue(afterSize == previousSize + 1);
+	}
+
+	@Test
+	public void getLineItem() {
+		setUpLineItem();
+
+		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
+		final LineItem newLineItem = this.sut.createLineItem(lineItem);
+		Assert.assertNotNull(newLineItem);
+		Assert.assertNotNull(newLineItem.getId());
+		assertEquals(lineItem, newLineItem, false);
+
+		final LineItem gottenLineItem = this.sut.getLineItem(newLineItem.getId());
+		Assert.assertNotNull(gottenLineItem);
+		assertEquals(newLineItem, gottenLineItem);
+	}
+
+	@Test
+	public void updateLineItem() {
+		setUpLineItem();
+
+		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
+		final LineItem newLineItem = this.sut.createLineItem(lineItem);
+		Assert.assertNotNull(newLineItem);
+		Assert.assertNotNull(newLineItem.getId());
+		assertEquals(lineItem, newLineItem, false);
+
+		newLineItem.setLabel("Modified Label");
+		final LineItem modifiedLineItem = this.sut.updateLineItem(newLineItem.getId(), newLineItem);
+		Assert.assertNotNull(modifiedLineItem);
+		assertEquals(newLineItem, modifiedLineItem);
+	}
+
+	@Test
+	public void deleteLineItem() {
+		setUpLineItem();
+
+		// get previous line items
+		final List<LineItem> previousLineItems = this.sut.getLineItems(null, null, null, null, null);
+		Assert.assertNotNull(previousLineItems);
+		final int previousSize = previousLineItems.size();
+
+		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
+		final LineItem newLineItem = this.sut.createLineItem(lineItem);
+		Assert.assertNotNull(newLineItem);
+		Assert.assertNotNull(newLineItem.getId());
+		assertEquals(lineItem, newLineItem, false);
+
+		// get after line items
+		List<LineItem> afterLineItems = this.sut.getLineItems(null, null, null, null, null);
+		Assert.assertNotNull(afterLineItems);
+		int afterSize = afterLineItems.size();
+		Assert.assertTrue(afterSize == previousSize + 1);
+
+		// delete line item
+		this.sut.deleteLineItem(newLineItem.getId());
+
+		// get after line items
+		afterLineItems = this.sut.getLineItems(null, null, null, null, null);
+		Assert.assertNotNull(afterLineItems);
+		afterSize = afterLineItems.size();
+		Assert.assertEquals(afterSize, previousSize);
 	}
 }
