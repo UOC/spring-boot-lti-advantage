@@ -1,6 +1,7 @@
 package edu.uoc.elearn.spring.security.lti.ags;
 
 import edu.uoc.elc.lti.platform.ags.LineItem;
+import edu.uoc.elc.lti.platform.ags.ResultContainer;
 import edu.uoc.elc.lti.tool.AssignmentGradeService;
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elearn.Config;
@@ -79,11 +80,6 @@ public class AgsClientTest {
 		lineItem.setScoreMaximum(scoreMaximum);
 		lineItem.setTag(TEST_TAG);
 		return lineItem;
-	}
-
-	private void setUpLineItem() {
-		Mockito.when(this.assignmentGradeService.canManageLineItems()).thenReturn(true);
-		Mockito.when(this.assignmentGradeService.canReadLineItems()).thenReturn(true);
 	}
 
 	@Test
@@ -175,23 +171,27 @@ public class AgsClientTest {
 	}
 
 	private int lineItemsSize() {
+		Mockito.when(this.assignmentGradeService.canReadLineItems()).thenReturn(true);
 		// get previous line items
 		final List<LineItem> lineItems = this.sut.getLineItems(null, null, null, null, null);
 		Assert.assertNotNull(lineItems);
 		return lineItems.size();
 	}
 
+	private LineItem createAndAssertNewLineItem() {
+		Mockito.when(this.assignmentGradeService.canManageLineItems()).thenReturn(true);
+		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
+		final LineItem newLineItem = this.sut.createLineItem(lineItem);
+		assertNewLineItem(lineItem, newLineItem);
+		return newLineItem;
+	}
+
 	@Test
 	public void createLineItem() {
-		setUpLineItem();
-
 		// get previous line items
 		final int previousSize = lineItemsSize();
 
-		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
-
-		final LineItem newLineItem = this.sut.createLineItem(lineItem);
-		assertNewLineItem(lineItem, newLineItem);
+		createAndAssertNewLineItem();
 
 		// get after line items
 		final int afterSize = lineItemsSize();
@@ -200,11 +200,9 @@ public class AgsClientTest {
 
 	@Test
 	public void getLineItem() {
-		setUpLineItem();
+		Mockito.when(this.assignmentGradeService.canReadLineItems()).thenReturn(true);
 
-		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
-		final LineItem newLineItem = this.sut.createLineItem(lineItem);
-		assertNewLineItem(lineItem, newLineItem);
+		final LineItem newLineItem = createAndAssertNewLineItem();
 
 		final LineItem gottenLineItem = this.sut.getLineItem(newLineItem.getId());
 		Assert.assertNotNull(gottenLineItem);
@@ -213,11 +211,7 @@ public class AgsClientTest {
 
 	@Test
 	public void updateLineItem() {
-		setUpLineItem();
-
-		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
-		final LineItem newLineItem = this.sut.createLineItem(lineItem);
-		assertNewLineItem(lineItem, newLineItem);
+		final LineItem newLineItem = createAndAssertNewLineItem();
 
 		newLineItem.setLabel("Modified Label");
 		final LineItem modifiedLineItem = this.sut.updateLineItem(newLineItem.getId(), newLineItem);
@@ -227,14 +221,10 @@ public class AgsClientTest {
 
 	@Test
 	public void deleteLineItem() {
-		setUpLineItem();
-
 		// get previous line items
 		final int previousSize = lineItemsSize();
 
-		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
-		final LineItem newLineItem = this.sut.createLineItem(lineItem);
-		assertNewLineItem(lineItem, newLineItem);
+		final LineItem newLineItem = createAndAssertNewLineItem();
 
 		// get after line items
 		int afterSize = lineItemsSize();
