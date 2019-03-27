@@ -1,12 +1,7 @@
 package edu.uoc.elearn.lti.provider.security;
 
-import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elearn.spring.security.lti.User;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Collection;
 
 /**
  * UserDetails from LTI context data. Includes Course information
