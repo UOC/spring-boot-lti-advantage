@@ -1,11 +1,11 @@
 package edu.uoc.elearn.lti.provider.controller;
 
 import edu.uoc.elc.lti.platform.Member;
+import edu.uoc.elc.lti.platform.ags.LineItem;
 import edu.uoc.elearn.lti.provider.security.UOCContext;
 import edu.uoc.elearn.lti.provider.security.UOCUser;
-import edu.uoc.elearn.spring.security.lti.Context;
-import edu.uoc.elearn.spring.security.lti.ToolProvider;
-import edu.uoc.elearn.spring.security.lti.User;
+import edu.uoc.elearn.spring.security.lti.tool.ToolProvider;
+import edu.uoc.elearn.spring.security.lti.ags.AgsClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -53,6 +53,21 @@ public class MainController {
 			}
 			ret.append("</ul>");
 		}
+
+		// add line items
+		ret.append("<h2>Line Items</h2>");
+		final AgsClient assignmentAndGradeService = toolProvider.getAssignmentAndGradeService();
+		if (!assignmentAndGradeService.canReadLineItems()) {
+			ret.append("<p><strong>Can't read Line Items</p>");
+		} else {
+			final List<LineItem> lineItems = assignmentAndGradeService.getLineItems(null, null, null, null, null);
+			ret.append("<ul>");
+			for (LineItem lineItem : lineItems) {
+				ret.append("<li>" + lineItem.getId() + ":" + lineItem.toString() +"></li>");
+			}
+			ret.append("</ul>");
+		}
+
 		return ret.toString();
 	}
 }
