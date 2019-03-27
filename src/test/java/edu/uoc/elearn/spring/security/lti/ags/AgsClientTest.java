@@ -1,6 +1,7 @@
 package edu.uoc.elearn.spring.security.lti.ags;
 
 import edu.uoc.elc.lti.platform.ags.LineItem;
+import edu.uoc.elc.lti.platform.ags.Result;
 import edu.uoc.elc.lti.platform.ags.ResultContainer;
 import edu.uoc.elc.lti.tool.AssignmentGradeService;
 import edu.uoc.elc.lti.tool.Tool;
@@ -236,5 +237,15 @@ public class AgsClientTest {
 		// get after line items
 		afterSize = lineItemsSize();
 		Assert.assertEquals(afterSize, previousSize);
+	}
+
+
+	@Test
+	public void getResults() {
+		Mockito.when(this.assignmentGradeService.canReadGrades()).thenReturn(true);
+
+		final LineItem newLineItem = createAndAssertNewLineItem();
+		final List<Result> lineItemResults = this.sut.getLineItemResults(newLineItem.getId(), null, null, null);
+		Assert.assertNotNull(lineItemResults);
 	}
 }

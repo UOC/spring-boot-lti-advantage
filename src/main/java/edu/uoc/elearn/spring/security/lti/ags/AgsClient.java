@@ -1,6 +1,7 @@
 package edu.uoc.elearn.spring.security.lti.ags;
 
 import edu.uoc.elc.lti.platform.ags.LineItem;
+import edu.uoc.elc.lti.platform.ags.Result;
 import edu.uoc.elc.lti.platform.ags.ResultContainer;
 import edu.uoc.elc.lti.platform.ags.Score;
 import edu.uoc.elc.lti.tool.AssignmentGradeService;
@@ -148,7 +149,7 @@ public class AgsClient implements edu.uoc.elc.lti.platform.ags.AgsClient {
 	 * @return all the results for the line item
 	 */
 	@Override
-	public ResultContainer getLineItemResults(String id, Integer limit, Integer page, String userId) {
+	public List<Result> getLineItemResults(String id, Integer limit, Integer page, String userId) {
 		if (!canReadGrades()) {
 			throw new MethodNotAllowedException("GET", null);
 		}
@@ -166,7 +167,11 @@ public class AgsClient implements edu.uoc.elc.lti.platform.ags.AgsClient {
 		String path = String.format( "%s/results", id);
 		String uri = path + (!StringUtils.isEmpty(query) ? "?" + query : "");
 
-		return restTemplate.getForObject(uri, ResultContainer.class);
+		ResponseEntity<List<Result>> responseEntity = restTemplate.exchange(uri,
+						HttpMethod.GET,
+						null,
+						new ParameterizedTypeReference<List<Result>>() {});
+		return responseEntity.getBody();
 	}
 
 	/**
