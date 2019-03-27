@@ -28,8 +28,10 @@ public class AgsClientTest {
 	@Autowired
 	private ToolDefinition toolDefinition;
 
+	// mocked object
 	private AssignmentGradeService assignmentGradeService;
 
+	// subject under test
 	private AgsClient sut;
 
 	@Before
