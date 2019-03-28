@@ -1,9 +1,6 @@
 package edu.uoc.elearn.spring.security.lti.ags;
 
-import edu.uoc.elc.lti.platform.ags.LineItem;
-import edu.uoc.elc.lti.platform.ags.Result;
-import edu.uoc.elc.lti.platform.ags.ResultContainer;
-import edu.uoc.elc.lti.platform.ags.Score;
+import edu.uoc.elc.lti.platform.ags.*;
 import edu.uoc.elc.lti.tool.AssignmentGradeService;
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elearn.Config;
@@ -20,7 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -199,7 +195,7 @@ public class AgsClientTest {
 
 		// get after line items
 		final int afterSize = lineItemsSize();
-		Assert.assertTrue(afterSize == previousSize + 1);
+		Assert.assertEquals(afterSize, previousSize + 1);
 	}
 
 	@Test
@@ -232,7 +228,7 @@ public class AgsClientTest {
 
 		// get after line items
 		int afterSize = lineItemsSize();
-		Assert.assertTrue(afterSize == previousSize + 1);
+		Assert.assertEquals(afterSize, previousSize + 1);
 
 		// delete line item
 		this.sut.deleteLineItem(newLineItem.getId());
@@ -261,17 +257,15 @@ public class AgsClientTest {
 		Assert.assertNotNull(previousLineItemResults);
 		int previousSize = previousLineItemResults.size();
 
-		final Instant now = Instant.now();
-
 		// create a score
 		final Score score = Score.builder()
 						.userId("1ad4b33a2579a2a98ed7")
 						.scoreGiven(0.5)
 						.scoreMaximum(1.0)
 						.comment("comment")
-						.timeStamp(now.toString())
-						.activityProgress("Completed")
-						.gradingProgress("PendingManual")
+						.timeStamp(Instant.now())
+						.activityProgress(ActivityProgressEnum.COMPLETED)
+						.gradingProgress(GradingProgressEnum.PENDING_MANUAL)
 						.build();
 
 
@@ -282,7 +276,7 @@ public class AgsClientTest {
 		final List<Result> afterLineItemResults = this.sut.getLineItemResults(newLineItem.getId(), null, null, null);
 		Assert.assertNotNull(afterLineItemResults);
 		int afterSize = afterLineItemResults.size();
-		Assert.assertTrue(afterSize == previousSize + 1);
+		Assert.assertEquals(afterSize, previousSize + 1);
 
 	}
 }
