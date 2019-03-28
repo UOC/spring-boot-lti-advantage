@@ -2,7 +2,6 @@ package edu.uoc.elearn.spring.security.lti.ags;
 
 import edu.uoc.elc.lti.platform.ags.LineItem;
 import edu.uoc.elc.lti.platform.ags.Result;
-import edu.uoc.elc.lti.platform.ags.ResultContainer;
 import edu.uoc.elc.lti.platform.ags.Score;
 import edu.uoc.elc.lti.tool.AssignmentGradeService;
 import edu.uoc.elearn.spring.security.lti.utils.QueryBuilder;
