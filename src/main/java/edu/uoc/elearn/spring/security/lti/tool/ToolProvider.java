@@ -5,7 +5,6 @@ import edu.uoc.elc.lti.platform.NamesRoleServiceResponse;
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elearn.spring.security.lti.LTIAccessTokenProvider;
 import edu.uoc.elearn.spring.security.lti.ags.AgsClient;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
