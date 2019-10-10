@@ -38,7 +38,7 @@ public class MainController {
 
 		StringBuilder ret = new StringBuilder("<h1>Parameters:</h1>");
 		ret.append("<ul>");
-		ret.append("<li>Fullname: " + user.getUsername() + "</li>");
+		ret.append("<li>Fullname: " + user.getFullName() + "</li>");
 		ret.append("<li>Course Code " + context.getKey() + "</li>");
 		ret.append("<li>Course Title " + context.getTitle() + "</li>");
 		ret.append("</ul>");
