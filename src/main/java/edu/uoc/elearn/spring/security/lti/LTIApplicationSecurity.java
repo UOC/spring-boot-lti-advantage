@@ -1,5 +1,6 @@
 package edu.uoc.elearn.spring.security.lti;
 
+import edu.uoc.elearn.spring.security.lti.openid.OIDCFilter;
 import edu.uoc.elearn.spring.security.lti.tool.ToolDefinition;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		final LTIProcessingFilter preAuthFilter = getPreAuthFilter();
 
-		http.addFilter(preAuthFilter);
+		http.addFilter(preAuthFilter).addFilterAfter(oidcFilter(), preAuthFilter.getClass());
 	}
 
 	@Autowired
@@ -42,5 +43,13 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 		authenticationProvider.setPreAuthenticatedUserDetailsService(new LTIAuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>(toolDefinition));
 
 		auth.authenticationProvider(authenticationProvider);
+	}
+
+	private final static String OIDC_URI = "/login";
+
+
+	private OIDCFilter oidcFilter() {
+		final OIDCFilter oidcFilter = new OIDCFilter(OIDC_URI, toolDefinition);
+		return oidcFilter;
 	}
 }

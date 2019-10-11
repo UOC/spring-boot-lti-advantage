@@ -29,7 +29,7 @@ public class LTIAuthenticationUserDetailsService<T extends Authentication> imple
 	public UserDetails loadUserDetails(Authentication authentication) throws UsernameNotFoundException {
 		if (authentication.getCredentials() instanceof HttpServletRequest) {
 			HttpServletRequest request = (HttpServletRequest) authentication.getCredentials();
-			Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
+			Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getOidcAuthUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 
 			String token = RequestUtils.getToken(request);
 			tool.validate(token);

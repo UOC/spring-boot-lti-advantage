@@ -35,7 +35,7 @@ public class LTIAuthenticationDetailsSource implements AuthenticationDetailsSour
 
 	public LTIAuthenticationDetailsSource(ToolDefinition toolDefinition) {
 		this.toolDefinition = toolDefinition;
-		this.tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
+		this.tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getOidcAuthUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 	}
 
 	protected Collection<String> getUserRoles(HttpServletRequest request) {

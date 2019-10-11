@@ -20,7 +20,7 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 	public LTIProcessingFilter(ToolDefinition toolDefinition) {
 		super();
 		this.toolDefinition = toolDefinition;
-		this.tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
+		this.tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getOidcAuthUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
 		setAuthenticationDetailsSource(new LTIAuthenticationDetailsSource(toolDefinition));
 	}
 

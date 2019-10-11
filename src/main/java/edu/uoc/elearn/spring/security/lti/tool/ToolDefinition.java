@@ -26,6 +26,8 @@ public class ToolDefinition {
 	@NotEmpty
 	private String accessTokenUrl;
 	@NotEmpty
+	private String oidcAuthUrl;
+	@NotEmpty
 	private String privateKey;
 	@NotEmpty
 	private String publicKey;
