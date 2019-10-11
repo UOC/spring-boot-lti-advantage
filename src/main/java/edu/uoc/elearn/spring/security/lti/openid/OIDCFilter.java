@@ -48,7 +48,7 @@ public class OIDCFilter extends AbstractAuthenticationProcessingFilter {
 		final LoginResponse oidcAuthParams = tool.getOidcAuthParams(loginRequest);
 
 		// save state
-		request.getSession().setAttribute("currentOidc", oidcAuthParams);
+		request.getSession().setAttribute("currentLti1.3State", oidcAuthParams.getState());
 
 		// do the redirection
 		String authRequest = tool.getOidcAuthUrl(oidcAuthParams);
