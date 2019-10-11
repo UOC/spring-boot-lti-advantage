@@ -1,6 +1,7 @@
 package edu.uoc.elearn.spring.security.lti;
 
 import edu.uoc.elc.lti.tool.Tool;
+import edu.uoc.elc.lti.tool.oidc.LoginResponse;
 import edu.uoc.elearn.spring.security.lti.tool.ToolDefinition;
 import edu.uoc.elearn.spring.security.lti.utils.RequestUtils;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
@@ -27,11 +28,20 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 	@Override
 	protected Object getPreAuthenticatedPrincipal(HttpServletRequest httpServletRequest) {
 		String token = RequestUtils.getToken(httpServletRequest);
+
 		tool.validate(token);
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Checking if request is a valid LTI");
 		}
 		if (tool.isValid()) {
+
+			String state = httpServletRequest.getParameter("state");
+			String sessionState = getStateFromSession(httpServletRequest);
+
+			if (!stateIsValid(state, sessionState)) {
+				this.logger.info("The request is invalid, state mismatch");
+				return null;
+			}
 
 			this.logger.info("Valid LTI call from " + tool.getUser().getId());
 			return tool.getUser().getId() + "-" + tool.getContext().getId();
@@ -50,5 +60,19 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 		}
 
 		return "{ N.A. }";
+	}
+
+	private String getStateFromSession(HttpServletRequest httpServletRequest) {
+		return (String) httpServletRequest.getSession().getAttribute("currentLti1.3State");
+	}
+
+	private boolean stateIsValid(String state, String sessionState) {
+		if (state == null && sessionState == null) {
+			return true;
+		}
+		if (state != null) {
+			return state.equals(sessionState);
+		}
+		return false;
 	}
 }
