@@ -1,6 +1,8 @@
 package edu.uoc.elearn.spring.security.lti;
 
 import edu.uoc.elc.lti.tool.Tool;
+import edu.uoc.elc.lti.tool.claims.JWSClaimAccessor;
+import edu.uoc.elearn.spring.security.lti.openid.HttpSessionOIDCLaunchSession;
 import edu.uoc.elearn.spring.security.lti.tool.ToolDefinition;
 import edu.uoc.elearn.spring.security.lti.utils.RequestUtils;
 import org.springframework.security.core.Authentication;
@@ -29,10 +31,22 @@ public class LTIAuthenticationUserDetailsService<T extends Authentication> imple
 	public UserDetails loadUserDetails(Authentication authentication) throws UsernameNotFoundException {
 		if (authentication.getCredentials() instanceof HttpServletRequest) {
 			HttpServletRequest request = (HttpServletRequest) authentication.getCredentials();
-			Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getOidcAuthUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
+			final HttpSessionOIDCLaunchSession oidcLaunchSession = new HttpSessionOIDCLaunchSession(request);
+			final JWSClaimAccessor jwsClaimAccessor = new JWSClaimAccessor(toolDefinition.getKeySetUrl());
+			Tool tool = new Tool(toolDefinition.getName(),
+							toolDefinition.getClientId(),
+							toolDefinition.getPlatform(),
+							toolDefinition.getKeySetUrl(),
+							toolDefinition.getAccessTokenUrl(),
+							toolDefinition.getOidcAuthUrl(),
+							toolDefinition.getPrivateKey(),
+							toolDefinition.getPublicKey(),
+							jwsClaimAccessor,
+							oidcLaunchSession);
 
 			String token = RequestUtils.getToken(request);
-			tool.validate(token);
+			String state = request.getParameter("state");
+			tool.validate(token, state);
 
 			if (tool.isValid()) {
 				Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();

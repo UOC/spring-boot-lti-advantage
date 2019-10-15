@@ -1,6 +1,7 @@
 package edu.uoc.elearn.spring.security.lti.openid;
 
 import edu.uoc.elc.lti.tool.Tool;
+import edu.uoc.elc.lti.tool.claims.JWSClaimAccessor;
 import edu.uoc.elc.lti.tool.oidc.LoginRequest;
 import edu.uoc.elc.lti.tool.oidc.LoginResponse;
 import edu.uoc.elearn.spring.security.lti.tool.ToolDefinition;
@@ -19,20 +20,32 @@ import java.net.URISyntaxException;
  * @author Xavi Aracil <xaracil@uoc.edu>
  */
 public class OIDCFilter extends AbstractAuthenticationProcessingFilter {
-	private final Tool tool;
+	private final ToolDefinition toolDefinition;
 
 	public OIDCFilter(String defaultFilterProcessesUrl, ToolDefinition toolDefinition) {
 		super(defaultFilterProcessesUrl);
-		this.tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getOidcAuthUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
+		this.toolDefinition = toolDefinition;
 	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+		final HttpSessionOIDCLaunchSession oidcLaunchSession = new HttpSessionOIDCLaunchSession(request);
+		final JWSClaimAccessor jwsClaimAccessor = new JWSClaimAccessor(toolDefinition.getKeySetUrl());
+		Tool tool = new Tool(toolDefinition.getName(),
+						toolDefinition.getClientId(),
+						toolDefinition.getPlatform(),
+						toolDefinition.getKeySetUrl(),
+						toolDefinition.getAccessTokenUrl(),
+						toolDefinition.getOidcAuthUrl(),
+						toolDefinition.getPrivateKey(),
+						toolDefinition.getPublicKey(),
+						jwsClaimAccessor,
+						oidcLaunchSession);
+
 		// get data from request
 		final LoginRequest loginRequest = LoginRequestFactory.from(request);
 
 		// verifications
-		// TODO: verify issuers
 		try {
 			final URI uri = new URI(loginRequest.getTarget_link_uri());
 			/* commented in local because localhost resolves to 0:0:0:0
@@ -40,20 +53,15 @@ public class OIDCFilter extends AbstractAuthenticationProcessingFilter {
 				throw new ServletException("Bad request");
 			}
 			*/
+
+			// do the redirection
+			String authRequest = tool.getOidcAuthUrl(loginRequest);
+
+			response.sendRedirect(authRequest);
+
 		} catch (URISyntaxException e) {
 			throw new ServletException("Bad request");
 		}
-
-		// prepare redirect
-		final LoginResponse oidcAuthParams = tool.getOidcAuthParams(loginRequest);
-
-		// save state
-		request.getSession().setAttribute("currentLti1.3State", oidcAuthParams.getState());
-
-		// do the redirection
-		String authRequest = tool.getOidcAuthUrl(oidcAuthParams);
-
-		response.sendRedirect(authRequest);
 
 		return null;
 	}

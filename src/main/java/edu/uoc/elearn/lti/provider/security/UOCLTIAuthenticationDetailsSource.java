@@ -35,13 +35,13 @@ public class UOCLTIAuthenticationDetailsSource extends LTIAuthenticationDetailsS
 		final Collection<String> userRoles = super.getUserRoles(request);
 
 		// UOC specific stuff
-		if (tool.isLearner() && !tool.isInstructor()) {
+		if (getTool().isLearner() && !getTool().isInstructor()) {
 			userRoles.add("STUDENT");
 		}
-		if (tool.isInstructor()) {
-			String specificRolesParam = (String) tool.getCustomParameter("specific_role");
+		if (getTool().isInstructor()) {
+			String specificRolesParam = (String) getTool().getCustomParameter("specific_role");
 			List<String> specificRoles = specificRolesParam != null ? Arrays.asList(specificRolesParam.split(",")) : null;
-			if ("TUTORIA".equals(tool.getCustomParameter("domain_typeid"))) {
+			if ("TUTORIA".equals(getTool().getCustomParameter("domain_typeid"))) {
 				userRoles.add("TUTOR");
 
 				// check if we're assigned as ADMINISTRACIO
@@ -59,7 +59,7 @@ public class UOCLTIAuthenticationDetailsSource extends LTIAuthenticationDetailsS
 			}
 		}
 
-		if (isAdmin(tool.getUser().getId(), (String) tool.getCustomParameter("username"), (String) tool.getCustomParameter("domain_code"))) {
+		if (isAdmin(getTool().getUser().getId(), (String) getTool().getCustomParameter("username"), (String) getTool().getCustomParameter("domain_code"))) {
 				userRoles.add("ADMIN");
 		}
 

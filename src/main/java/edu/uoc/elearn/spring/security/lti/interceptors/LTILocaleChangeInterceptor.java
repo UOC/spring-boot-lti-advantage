@@ -1,6 +1,8 @@
 package edu.uoc.elearn.spring.security.lti.interceptors;
 
 import edu.uoc.elc.lti.tool.Tool;
+import edu.uoc.elc.lti.tool.claims.JWSClaimAccessor;
+import edu.uoc.elearn.spring.security.lti.openid.HttpSessionOIDCLaunchSession;
 import edu.uoc.elearn.spring.security.lti.tool.ToolDefinition;
 import edu.uoc.elearn.spring.security.lti.utils.RequestUtils;
 import org.apache.commons.logging.Log;
@@ -28,9 +30,23 @@ public class LTILocaleChangeInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-		Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
+		final HttpSessionOIDCLaunchSession oidcLaunchSession = new HttpSessionOIDCLaunchSession(request);
+		final JWSClaimAccessor jwsClaimAccessor = new JWSClaimAccessor(toolDefinition.getKeySetUrl());
+
+		Tool tool = new Tool(toolDefinition.getName(),
+						toolDefinition.getClientId(),
+						toolDefinition.getPlatform(),
+						toolDefinition.getKeySetUrl(),
+						toolDefinition.getAccessTokenUrl(),
+						toolDefinition.getOidcAuthUrl(),
+						toolDefinition.getPrivateKey(),
+						toolDefinition.getPublicKey(),
+						jwsClaimAccessor,
+						oidcLaunchSession);
+
 		String token = RequestUtils.getToken(request);
-		tool.validate(token);
+		String state = request.getParameter("state");
+		tool.validate(token, state);
 		if (tool.isValid()) {
 			String newLocale = tool.getLocale();
 			if (newLocale != null) {
