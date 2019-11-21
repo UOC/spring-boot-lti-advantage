@@ -19,8 +19,11 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 @ComponentScan(value = {"edu.uoc.elc.spring.security.lti.mvc", "edu.uoc.elc.spring.security.lti.tool"})
 public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	@Getter
-	@Autowired
-	ToolDefinition toolDefinition;
+	final ToolDefinition toolDefinition;
+
+	public LTIApplicationSecurity(ToolDefinition toolDefinition) {
+		this.toolDefinition = toolDefinition;
+	}
 
 	protected LTIProcessingFilter getPreAuthFilter() throws Exception {
 		LTIProcessingFilter preAuthFilter = new LTIProcessingFilter(toolDefinition);

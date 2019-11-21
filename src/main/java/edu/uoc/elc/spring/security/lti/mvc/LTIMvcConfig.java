@@ -12,16 +12,16 @@ import java.util.List;
  */
 @Configuration
 public class LTIMvcConfig implements WebMvcConfigurer {
-	@Autowired
-	private CurrentContextHandlerMethodArgumentResolver currentContextHandlerMethodArgumentResolver;
+	private final CurrentContextHandlerMethodArgumentResolver currentContextHandlerMethodArgumentResolver;
 
-	@Autowired
-	private CurrentUserHandlerMethodArgumentResolver currentUserHandlerMethodArgumentResolver;
+	private final CurrentUserHandlerMethodArgumentResolver currentUserHandlerMethodArgumentResolver;
 
-	@Autowired
-	private CurrentToolHandlerMethodArgumentResolver currentToolHandlerMethodArgumentResolver;
+	private final CurrentToolHandlerMethodArgumentResolver currentToolHandlerMethodArgumentResolver;
 
-	public LTIMvcConfig() {
+	public LTIMvcConfig(CurrentContextHandlerMethodArgumentResolver currentContextHandlerMethodArgumentResolver, CurrentToolHandlerMethodArgumentResolver currentToolHandlerMethodArgumentResolver, CurrentUserHandlerMethodArgumentResolver currentUserHandlerMethodArgumentResolver) {
+		this.currentContextHandlerMethodArgumentResolver = currentContextHandlerMethodArgumentResolver;
+		this.currentToolHandlerMethodArgumentResolver = currentToolHandlerMethodArgumentResolver;
+		this.currentUserHandlerMethodArgumentResolver = currentUserHandlerMethodArgumentResolver;
 	}
 
 	@Override
