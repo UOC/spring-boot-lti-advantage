@@ -10,6 +10,7 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 public class QueryBuilder {
 
 
+	@SafeVarargs
 	public static String of(SimpleImmutableEntry<String, Object>... parameters) throws UnsupportedEncodingException {
 		if (parameters.length == 0) {
 			return "";
