@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Xavi Aracil <xaracil@uoc.edu>
@@ -34,7 +35,7 @@ public class ToolProvider {
 		final String membershipUrl = tool.getNameRoleService().getContext_memberships_url();
 
 		final NamesRoleServiceResponse namesRoleServiceResponse = restOperations.getForObject(membershipUrl, NamesRoleServiceResponse.class);
-		return namesRoleServiceResponse.getMembers();
+		return Objects.requireNonNull(namesRoleServiceResponse).getMembers();
 	}
 
 	/**

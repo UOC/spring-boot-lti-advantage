@@ -21,7 +21,7 @@ import java.util.Collection;
  * @author xaracil@uoc.edu
  */
 public class LTIAuthenticationUserDetailsService<T extends Authentication> implements AuthenticationUserDetailsService<T> {
-	private ToolDefinition toolDefinition;
+	private final ToolDefinition toolDefinition;
 
 	public LTIAuthenticationUserDetailsService(ToolDefinition toolDefinition) {
 		this.toolDefinition = toolDefinition;

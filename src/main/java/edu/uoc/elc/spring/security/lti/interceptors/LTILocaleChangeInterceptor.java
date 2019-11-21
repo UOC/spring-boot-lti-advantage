@@ -22,7 +22,7 @@ import java.util.Locale;
 public class LTILocaleChangeInterceptor extends HandlerInterceptorAdapter {
 	protected final Log logger = LogFactory.getLog(this.getClass());
 
-	private ToolDefinition toolDefinition;
+	private final ToolDefinition toolDefinition;
 
 	public LTILocaleChangeInterceptor(ToolDefinition toolDefinition) {
 		this.toolDefinition = toolDefinition;
