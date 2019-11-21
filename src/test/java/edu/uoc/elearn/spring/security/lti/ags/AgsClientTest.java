@@ -3,6 +3,10 @@ package edu.uoc.elearn.spring.security.lti.ags;
 import edu.uoc.elc.lti.platform.ags.*;
 import edu.uoc.elc.lti.tool.AssignmentGradeService;
 import edu.uoc.elc.lti.tool.Tool;
+import edu.uoc.elc.lti.tool.claims.ClaimAccessor;
+import edu.uoc.elc.lti.tool.claims.JWSClaimAccessor;
+import edu.uoc.elc.lti.tool.oidc.InMemoryOIDCLaunchSession;
+import edu.uoc.elc.lti.tool.oidc.OIDCLaunchSession;
 import edu.uoc.elearn.Config;
 import edu.uoc.elearn.spring.security.lti.tool.ToolDefinition;
 import edu.uoc.elearn.spring.security.lti.tool.ToolProvider;
@@ -38,7 +42,19 @@ public class AgsClientTest {
 	@Before
 	public void setUp() {
 		Assert.assertNotNull(toolDefinition);
-		final Tool tool = new Tool(toolDefinition.getName(), toolDefinition.getClientId(), toolDefinition.getKeySetUrl(), toolDefinition.getAccessTokenUrl(), toolDefinition.getPrivateKey(), toolDefinition.getPublicKey());
+		OIDCLaunchSession launchSession = new InMemoryOIDCLaunchSession();
+		ClaimAccessor claimAccessor = new JWSClaimAccessor(toolDefinition.getKeySetUrl());
+		final Tool tool = new Tool(toolDefinition.getName(),
+						toolDefinition.getClientId(),
+						toolDefinition.getPlatform(),
+						toolDefinition.getKeySetUrl(),
+						toolDefinition.getAccessTokenUrl(),
+						toolDefinition.getOidcAuthUrl(),
+						toolDefinition.getPrivateKey(),
+						toolDefinition.getPublicKey(),
+						claimAccessor,
+						launchSession);
+
 		Assert.assertNotNull(tool);
 
 		// mock service
