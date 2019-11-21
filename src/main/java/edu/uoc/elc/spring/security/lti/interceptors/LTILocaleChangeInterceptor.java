@@ -1,9 +1,8 @@
 package edu.uoc.elc.spring.security.lti.interceptors;
 
 import edu.uoc.elc.lti.tool.Tool;
-import edu.uoc.elc.lti.tool.claims.JWSClaimAccessor;
-import edu.uoc.elc.spring.security.lti.openid.HttpSessionOIDCLaunchSession;
 import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
+import edu.uoc.elc.spring.security.lti.tool.ToolFactory;
 import edu.uoc.elc.spring.security.lti.utils.RequestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,19 +29,8 @@ public class LTILocaleChangeInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-		final HttpSessionOIDCLaunchSession oidcLaunchSession = new HttpSessionOIDCLaunchSession(request);
-		final JWSClaimAccessor jwsClaimAccessor = new JWSClaimAccessor(toolDefinition.getKeySetUrl());
-
-		Tool tool = new Tool(toolDefinition.getName(),
-						toolDefinition.getClientId(),
-						toolDefinition.getPlatform(),
-						toolDefinition.getKeySetUrl(),
-						toolDefinition.getAccessTokenUrl(),
-						toolDefinition.getOidcAuthUrl(),
-						toolDefinition.getPrivateKey(),
-						toolDefinition.getPublicKey(),
-						jwsClaimAccessor,
-						oidcLaunchSession);
+		ToolFactory toolFactory = new ToolFactory();
+		final Tool tool = toolFactory.from(toolDefinition, request);
 
 		String token = RequestUtils.getToken(request);
 		String state = request.getParameter("state");

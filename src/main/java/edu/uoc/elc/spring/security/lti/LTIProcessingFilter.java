@@ -1,9 +1,8 @@
 package edu.uoc.elc.spring.security.lti;
 
 import edu.uoc.elc.lti.tool.Tool;
-import edu.uoc.elc.lti.tool.claims.JWSClaimAccessor;
-import edu.uoc.elc.spring.security.lti.openid.HttpSessionOIDCLaunchSession;
 import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
+import edu.uoc.elc.spring.security.lti.tool.ToolFactory;
 import edu.uoc.elc.spring.security.lti.utils.RequestUtils;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
@@ -27,19 +26,8 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 
 	private Tool getTool(HttpServletRequest httpServletRequest) {
 		if (tool == null) {
-			final HttpSessionOIDCLaunchSession oidcLaunchSession = new HttpSessionOIDCLaunchSession(httpServletRequest);
-			final JWSClaimAccessor jwsClaimAccessor = new JWSClaimAccessor(toolDefinition.getKeySetUrl());
-
-			this.tool = new Tool(toolDefinition.getName(),
-							toolDefinition.getClientId(),
-							toolDefinition.getPlatform(),
-							toolDefinition.getKeySetUrl(),
-							toolDefinition.getAccessTokenUrl(),
-							toolDefinition.getOidcAuthUrl(),
-							toolDefinition.getPrivateKey(),
-							toolDefinition.getPublicKey(),
-							jwsClaimAccessor,
-							oidcLaunchSession);
+			ToolFactory toolFactory = new ToolFactory();
+			this.tool = toolFactory.from(toolDefinition, httpServletRequest);
 		}
 		return this.tool;
 	}

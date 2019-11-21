@@ -1,9 +1,8 @@
 package edu.uoc.elc.spring.security.lti;
 
 import edu.uoc.elc.lti.tool.Tool;
-import edu.uoc.elc.lti.tool.claims.JWSClaimAccessor;
-import edu.uoc.elc.spring.security.lti.openid.HttpSessionOIDCLaunchSession;
 import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
+import edu.uoc.elc.spring.security.lti.tool.ToolFactory;
 import edu.uoc.elc.spring.security.lti.utils.RequestUtils;
 import lombok.Getter;
 import org.apache.commons.logging.Log;
@@ -42,20 +41,8 @@ public class LTIAuthenticationDetailsSource implements AuthenticationDetailsSour
 
 	protected Collection<String> getUserRoles(HttpServletRequest request) {
 		ArrayList<String> ltiUserRolesList = new ArrayList<>();
-
-		final HttpSessionOIDCLaunchSession oidcLaunchSession = new HttpSessionOIDCLaunchSession(request);
-		final JWSClaimAccessor jwsClaimAccessor = new JWSClaimAccessor(toolDefinition.getKeySetUrl());
-
-		this.tool = new Tool(toolDefinition.getName(),
-						toolDefinition.getClientId(),
-						toolDefinition.getPlatform(),
-						toolDefinition.getKeySetUrl(),
-						toolDefinition.getAccessTokenUrl(),
-						toolDefinition.getOidcAuthUrl(),
-						toolDefinition.getPrivateKey(),
-						toolDefinition.getPublicKey(),
-						jwsClaimAccessor,
-						oidcLaunchSession);
+		ToolFactory toolFactory = new ToolFactory();
+		this.tool = toolFactory.from(toolDefinition, request);
 
 		String token = RequestUtils.getToken(request);
 		String state = request.getParameter("state");
