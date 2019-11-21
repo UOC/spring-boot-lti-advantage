@@ -59,13 +59,11 @@ public class AgsClient implements edu.uoc.elc.lti.platform.ags.AgsClient {
 
 		String query;
 		try {
-			query = QueryBuilder.of(new AbstractMap.SimpleImmutableEntry[] {
-							new AbstractMap.SimpleImmutableEntry("limit", limit),
+			query = QueryBuilder.of(new AbstractMap.SimpleImmutableEntry("limit", limit),
 							new AbstractMap.SimpleImmutableEntry("page", page),
 							new AbstractMap.SimpleImmutableEntry("resourceLinkId", resourceLinkId),
 							new AbstractMap.SimpleImmutableEntry("tag", tag),
-							new AbstractMap.SimpleImmutableEntry("resourceId", resourceId)
-			});
+							new AbstractMap.SimpleImmutableEntry("resourceId", resourceId));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
@@ -154,11 +152,9 @@ public class AgsClient implements edu.uoc.elc.lti.platform.ags.AgsClient {
 		}
 		String query;
 		try {
-			query = QueryBuilder.of(new AbstractMap.SimpleImmutableEntry[] {
-							new AbstractMap.SimpleImmutableEntry("limit", limit),
+			query = QueryBuilder.of(new AbstractMap.SimpleImmutableEntry("limit", limit),
 							new AbstractMap.SimpleImmutableEntry("page", page),
-							new AbstractMap.SimpleImmutableEntry("userId", userId)
-			});
+							new AbstractMap.SimpleImmutableEntry("userId", userId));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
