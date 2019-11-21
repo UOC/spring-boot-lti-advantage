@@ -51,6 +51,7 @@ public class AgsClient implements edu.uoc.elc.lti.platform.ags.AgsClient {
 	 * @param resourceId limit the line items returned to only those which have been associated with the specified tool resource ID. Can be null.
 	 * @return all the line items associated to tool in the specified learning context. Results may be broken in multiple pages in particular if a limit parameter is present.
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<LineItem> getLineItems(@Nullable Integer limit, @Nullable Integer page, @Nullable String resourceLinkId, @Nullable String tag, @Nullable String resourceId) {
 		if (!canReadLineItems()) {
@@ -145,6 +146,7 @@ public class AgsClient implements edu.uoc.elc.lti.platform.ags.AgsClient {
 	 * @param userId limit the line items returned to only those which have been associated with this user. Results must contain at most one result.
 	 * @return all the results for the line item
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Result> getLineItemResults(String id, Integer limit, Integer page, String userId) {
 		if (!canReadGrades()) {
