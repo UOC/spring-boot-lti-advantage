@@ -49,7 +49,6 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 
 
 	private OIDCFilter oidcFilter() {
-		final OIDCFilter oidcFilter = new OIDCFilter(OIDC_URI, toolDefinition);
-		return oidcFilter;
+		return new OIDCFilter(OIDC_URI, toolDefinition);
 	}
 }
