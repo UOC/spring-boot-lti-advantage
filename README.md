@@ -1,27 +1,15 @@
-# Spring Boot LTI Provider
-This is an skeleton of LTI Provider for Spring Boot. We test it with SpringBoot 1.2.5.RELEASE
+# Spring Boot LTI Advantage library
 
+LTI Advantage library for Spring Boot projects
 
-## Consumer Keys and secrets
-To use the LTI provider you have to enable the allowed consumer keys and secrets into file src/main/resources/authorizedConsumersKey.properties
+## Java Spring template project
 
-This is a configuration to be readed by providers to authorize the consumer key and gets the secret
-```
-consumer_key."name_consumer".enabled=1
-consumer_key."name_consumer".secret=secret
-consumer_key."name_consumer".callBackUrl=
-consumer_key."name_consumer".fieldSessionId=token
-```
+This project is based on a GitLab [Project Template](https://docs.gitlab.com/ee/gitlab-basics/create-project.html).
 
+Improvements can be proposed in the [original project](https://gitlab.com/gitlab-org/project-templates/spring).
 
+## CI/CD with Auto DevOps
 
-## Compile
-To compile you will need to add to your local repository these 2 files
+This template is compatible with [Auto DevOps](https://docs.gitlab.com/ee/topics/autodevops/).
 
-```
-mvn install:install-file -Dfile=PATH_TO_SpringBootLTIProvider/lib/JavaUtils-1.1.2.jar -DgroupId=org.campusproject -DartifactId=JavaUtils -Dversion=1.1.2 -Dpackaging=jar
-mvn install:install-file -Dfile=PATH_TO_SpringBootLTIProvider/lib/lti-1.0.6-SNAPSHOT.jar -DgroupId=edu.uoc -DartifactId=lti -Dversion=1.0.6-SNAPSHOT -Dpackaging=jar
-
-```
-
-You have to change PATH_TO_SpringBootLTIProvider for your absolute path to SpringBootLTIProvider
+If Auto DevOps is not already enabled for this project, you can [turn it on](https://docs.gitlab.com/ee/topics/autodevops/#enabling-auto-devops) in the project settings.
