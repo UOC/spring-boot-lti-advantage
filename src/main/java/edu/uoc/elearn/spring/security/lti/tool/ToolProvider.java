@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @author Xavi Aracil <xaracil@uoc.edu>
  */
-@RequiredArgsConstructor()
+@RequiredArgsConstructor
 public class ToolProvider {
 	private final Tool tool;
 
