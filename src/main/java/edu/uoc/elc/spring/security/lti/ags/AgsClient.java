@@ -14,7 +14,6 @@ import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.MethodNotAllowedException;
 
-import javax.annotation.Nullable;
 import java.io.UnsupportedEncodingException;
 import java.util.AbstractMap;
 import java.util.List;
@@ -53,7 +52,7 @@ public class AgsClient implements edu.uoc.lti.ags.AgsClient {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<LineItem> getLineItems(@Nullable Integer limit, @Nullable Integer page, @Nullable String resourceLinkId, @Nullable String tag, @Nullable String resourceId) {
+	public List<LineItem> getLineItems(Integer limit, Integer page, String resourceLinkId, String tag, String resourceId) {
 		if (!canReadLineItems()) {
 			throw new MethodNotAllowedException("GET", null);
 		}
