@@ -2,6 +2,9 @@ package edu.uoc.elc.spring.security.lti;
 
 import edu.uoc.elc.spring.security.lti.openid.OIDCFilter;
 import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
+import edu.uoc.lti.claims.ClaimAccessor;
+import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
+import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,13 +22,19 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	@Getter
 	final ToolDefinition toolDefinition;
+	final ClaimAccessor claimAccessor;
+	final DeepLinkingTokenBuilder deepLinkingTokenBuilder;
+	final ClientCredentialsTokenBuilder clientCredentialsTokenBuilder;
 
-	public LTIApplicationSecurity(ToolDefinition toolDefinition) {
+	public LTIApplicationSecurity(ToolDefinition toolDefinition, ClaimAccessor claimAccessor, DeepLinkingTokenBuilder deepLinkingTokenBuilder, ClientCredentialsTokenBuilder clientCredentialsTokenBuilder) {
 		this.toolDefinition = toolDefinition;
+		this.claimAccessor = claimAccessor;
+		this.deepLinkingTokenBuilder = deepLinkingTokenBuilder;
+		this.clientCredentialsTokenBuilder = clientCredentialsTokenBuilder;
 	}
 
 	protected LTIProcessingFilter getPreAuthFilter() throws Exception {
-		LTIProcessingFilter preAuthFilter = new LTIProcessingFilter(toolDefinition);
+		LTIProcessingFilter preAuthFilter = new LTIProcessingFilter(toolDefinition, claimAccessor, deepLinkingTokenBuilder, clientCredentialsTokenBuilder);
 
 		preAuthFilter.setCheckForPrincipalChanges(true);
 		preAuthFilter.setAuthenticationManager(authenticationManager());
@@ -42,7 +51,7 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) {
 		PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
-		authenticationProvider.setPreAuthenticatedUserDetailsService(new LTIAuthenticationUserDetailsService<>(toolDefinition));
+		authenticationProvider.setPreAuthenticatedUserDetailsService(new LTIAuthenticationUserDetailsService<>(toolDefinition, claimAccessor, deepLinkingTokenBuilder, clientCredentialsTokenBuilder));
 
 		auth.authenticationProvider(authenticationProvider);
 	}
@@ -51,6 +60,6 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 
 
 	private OIDCFilter oidcFilter() {
-		return new OIDCFilter(OIDC_URI, toolDefinition);
+		return new OIDCFilter(OIDC_URI, toolDefinition, claimAccessor, deepLinkingTokenBuilder, clientCredentialsTokenBuilder);
 	}
 }

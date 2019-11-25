@@ -3,6 +3,9 @@ package edu.uoc.elc.spring.security.lti;
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
 import edu.uoc.elc.spring.security.lti.tool.ToolFactory;
+import edu.uoc.lti.claims.ClaimAccessor;
+import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
+import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
@@ -20,9 +23,15 @@ import java.util.Collection;
  */
 public class LTIAuthenticationUserDetailsService<T extends Authentication> implements AuthenticationUserDetailsService<T> {
 	private final ToolDefinition toolDefinition;
+	private final ClaimAccessor claimAccessor;
+	private final DeepLinkingTokenBuilder deepLinkingTokenBuilder;
+	private final ClientCredentialsTokenBuilder clientCredentialsTokenBuilder;
 
-	public LTIAuthenticationUserDetailsService(ToolDefinition toolDefinition) {
+	public LTIAuthenticationUserDetailsService(ToolDefinition toolDefinition, ClaimAccessor claimAccessor, DeepLinkingTokenBuilder deepLinkingTokenBuilder, ClientCredentialsTokenBuilder clientCredentialsTokenBuilder) {
 		this.toolDefinition = toolDefinition;
+		this.claimAccessor = claimAccessor;
+		this.deepLinkingTokenBuilder = deepLinkingTokenBuilder;
+		this.clientCredentialsTokenBuilder = clientCredentialsTokenBuilder;
 	}
 
 	@Override
@@ -30,7 +39,7 @@ public class LTIAuthenticationUserDetailsService<T extends Authentication> imple
 		if (authentication.getCredentials() instanceof HttpServletRequest) {
 			HttpServletRequest request = (HttpServletRequest) authentication.getCredentials();
 			ToolFactory toolFactory = new ToolFactory();
-			final Tool tool = toolFactory.from(toolDefinition, request);
+			final Tool tool = toolFactory.from(toolDefinition, claimAccessor, deepLinkingTokenBuilder, clientCredentialsTokenBuilder, request);
 
 			if (tool.isValid()) {
 				Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();

@@ -4,6 +4,9 @@ import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
 import edu.uoc.elc.spring.security.lti.tool.ToolFactory;
 import edu.uoc.elc.spring.security.lti.utils.RequestUtils;
+import edu.uoc.lti.claims.ClaimAccessor;
+import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
+import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,18 +19,25 @@ import javax.servlet.http.HttpServletRequest;
 public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
 	private final ToolDefinition toolDefinition;
+	private final ClaimAccessor claimAccessor;
+	private final DeepLinkingTokenBuilder deepLinkingTokenBuilder;
+	private final ClientCredentialsTokenBuilder clientCredentialsTokenBuilder;
+
 	private Tool tool;
 
-	public LTIProcessingFilter(ToolDefinition toolDefinition) {
+	public LTIProcessingFilter(ToolDefinition toolDefinition, ClaimAccessor claimAccessor, DeepLinkingTokenBuilder deepLinkingTokenBuilder, ClientCredentialsTokenBuilder clientCredentialsTokenBuilder) {
 		super();
 		this.toolDefinition = toolDefinition;
-		setAuthenticationDetailsSource(new LTIAuthenticationDetailsSource(toolDefinition));
+		this.claimAccessor = claimAccessor;
+		this.deepLinkingTokenBuilder = deepLinkingTokenBuilder;
+		this.clientCredentialsTokenBuilder = clientCredentialsTokenBuilder;
+		setAuthenticationDetailsSource(new LTIAuthenticationDetailsSource(toolDefinition, claimAccessor, deepLinkingTokenBuilder, clientCredentialsTokenBuilder));
 	}
 
 	private Tool getTool(HttpServletRequest httpServletRequest) {
 		if (tool == null) {
 			ToolFactory toolFactory = new ToolFactory();
-			this.tool = toolFactory.from(toolDefinition, httpServletRequest);
+			this.tool = toolFactory.from(toolDefinition, claimAccessor, deepLinkingTokenBuilder, clientCredentialsTokenBuilder, httpServletRequest);
 		}
 		return this.tool;
 	}

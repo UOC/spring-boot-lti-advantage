@@ -8,10 +8,8 @@ import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
 import edu.uoc.elc.spring.security.lti.tool.ToolProvider;
 import edu.uoc.lti.ags.*;
 import edu.uoc.lti.claims.ClaimAccessor;
+import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
 import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
-import edu.uoc.lti.jwt.claims.JWSClaimAccessor;
-import edu.uoc.lti.jwt.client.JWSClientCredentialsTokenBuilder;
-import edu.uoc.lti.jwt.deeplink.JWSTokenBuilder;
 import edu.uoc.lti.oidc.OIDCLaunchSession;
 import org.junit.After;
 import org.junit.Assert;
@@ -36,6 +34,15 @@ public class AgsClientTest {
 	@Autowired
 	private ToolDefinition toolDefinition;
 
+	@Autowired
+	private ClaimAccessor claimAccessor;
+
+	@Autowired
+	private DeepLinkingTokenBuilder deepLinkingTokenBuilder;
+
+	@Autowired
+	private ClientCredentialsTokenBuilder clientCredentialsTokenBuilder;
+
 	// mocked object
 	private AssignmentGradeService assignmentGradeService;
 
@@ -46,9 +53,6 @@ public class AgsClientTest {
 	public void setUp() {
 		Assert.assertNotNull(toolDefinition);
 		OIDCLaunchSession launchSession = new InMemoryOIDCLaunchSession();
-		ClaimAccessor claimAccessor = new JWSClaimAccessor(toolDefinition.getKeySetUrl());
-		final DeepLinkingTokenBuilder deepLinkingTokenBuilder = new JWSTokenBuilder(toolDefinition.getPublicKey(), toolDefinition.getPrivateKey());
-		final JWSClientCredentialsTokenBuilder clientCredentialsTokenBuilder = new JWSClientCredentialsTokenBuilder(toolDefinition.getPublicKey(), toolDefinition.getPrivateKey());
 		final Tool tool = new Tool(toolDefinition.getName(),
 						toolDefinition.getClientId(),
 						toolDefinition.getPlatform(),
