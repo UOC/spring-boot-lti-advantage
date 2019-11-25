@@ -25,21 +25,15 @@ public class LTILocaleChangeInterceptor extends HandlerInterceptorAdapter {
 	protected final Log logger = LogFactory.getLog(this.getClass());
 
 	private final ToolDefinition toolDefinition;
-	private final ClaimAccessor claimAccessor;
-	private final DeepLinkingTokenBuilder deepLinkingTokenBuilder;
-	private final ClientCredentialsTokenBuilder clientCredentialsTokenBuilder;
 
-	public LTILocaleChangeInterceptor(ToolDefinition toolDefinition, ClaimAccessor claimAccessor, DeepLinkingTokenBuilder deepLinkingTokenBuilder, ClientCredentialsTokenBuilder clientCredentialsTokenBuilder) {
+	public LTILocaleChangeInterceptor(ToolDefinition toolDefinition) {
 		this.toolDefinition = toolDefinition;
-		this.claimAccessor = claimAccessor;
-		this.deepLinkingTokenBuilder = deepLinkingTokenBuilder;
-		this.clientCredentialsTokenBuilder = clientCredentialsTokenBuilder;
 	}
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 		ToolFactory toolFactory = new ToolFactory();
-		final Tool tool = toolFactory.from(toolDefinition, claimAccessor, deepLinkingTokenBuilder, clientCredentialsTokenBuilder, request);
+		final Tool tool = toolFactory.from(toolDefinition, request);
 
 		String token = RequestUtils.getToken(request);
 		String state = request.getParameter("state");

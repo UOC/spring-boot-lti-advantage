@@ -1,5 +1,6 @@
 package edu.uoc.elc;
 
+import edu.uoc.elc.spring.security.lti.tool.BasicDefinition;
 import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
 import edu.uoc.lti.claims.ClaimAccessor;
 import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
@@ -26,17 +27,17 @@ import org.springframework.context.annotation.PropertySource;
 @TestConfiguration
 public class Config {
 	@Bean
-	public ClaimAccessor claimAccessor(ToolDefinition toolDefinition) {
-		return new JWSClaimAccessor(toolDefinition.getKeySetUrl());
+	public ClaimAccessor claimAccessor(BasicDefinition basicDefinition) {
+		return new JWSClaimAccessor(basicDefinition.getKeySetUrl());
 	}
 
 	@Bean
-	public DeepLinkingTokenBuilder deepLinkingTokenBuilder(ToolDefinition toolDefinition) {
-		return new JWSTokenBuilder(toolDefinition.getPublicKey(), toolDefinition.getPrivateKey());
+	public DeepLinkingTokenBuilder deepLinkingTokenBuilder(BasicDefinition basicDefinition) {
+		return new JWSTokenBuilder(basicDefinition.getPublicKey(), basicDefinition.getPrivateKey());
 	}
 
 	@Bean
-	public ClientCredentialsTokenBuilder clientCredentialsTokenBuilder(ToolDefinition toolDefinition) {
-		return new JWSClientCredentialsTokenBuilder(toolDefinition.getPublicKey(), toolDefinition.getPrivateKey());
+	public ClientCredentialsTokenBuilder clientCredentialsTokenBuilder(BasicDefinition basicDefinition) {
+		return new JWSClientCredentialsTokenBuilder(basicDefinition.getPublicKey(), basicDefinition.getPrivateKey());
 	}
 }

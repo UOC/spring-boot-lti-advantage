@@ -19,25 +19,19 @@ import javax.servlet.http.HttpServletRequest;
 public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
 	private final ToolDefinition toolDefinition;
-	private final ClaimAccessor claimAccessor;
-	private final DeepLinkingTokenBuilder deepLinkingTokenBuilder;
-	private final ClientCredentialsTokenBuilder clientCredentialsTokenBuilder;
 
 	private Tool tool;
 
-	public LTIProcessingFilter(ToolDefinition toolDefinition, ClaimAccessor claimAccessor, DeepLinkingTokenBuilder deepLinkingTokenBuilder, ClientCredentialsTokenBuilder clientCredentialsTokenBuilder) {
+	public LTIProcessingFilter(ToolDefinition toolDefinition) {
 		super();
 		this.toolDefinition = toolDefinition;
-		this.claimAccessor = claimAccessor;
-		this.deepLinkingTokenBuilder = deepLinkingTokenBuilder;
-		this.clientCredentialsTokenBuilder = clientCredentialsTokenBuilder;
-		setAuthenticationDetailsSource(new LTIAuthenticationDetailsSource(toolDefinition, claimAccessor, deepLinkingTokenBuilder, clientCredentialsTokenBuilder));
+		setAuthenticationDetailsSource(new LTIAuthenticationDetailsSource(toolDefinition));
 	}
 
 	private Tool getTool(HttpServletRequest httpServletRequest) {
 		if (tool == null) {
 			ToolFactory toolFactory = new ToolFactory();
-			this.tool = toolFactory.from(toolDefinition, claimAccessor, deepLinkingTokenBuilder, clientCredentialsTokenBuilder, httpServletRequest);
+			this.tool = toolFactory.from(toolDefinition, httpServletRequest);
 		}
 		return this.tool;
 	}

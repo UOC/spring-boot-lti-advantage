@@ -23,22 +23,16 @@ import java.net.URISyntaxException;
  */
 public class OIDCFilter extends AbstractAuthenticationProcessingFilter {
 	private final ToolDefinition toolDefinition;
-	private final ClaimAccessor claimAccessor;
-	private final DeepLinkingTokenBuilder deepLinkingTokenBuilder;
-	private final ClientCredentialsTokenBuilder clientCredentialsTokenBuilder;
 
-	public OIDCFilter(String defaultFilterProcessesUrl, ToolDefinition toolDefinition, ClaimAccessor claimAccessor, DeepLinkingTokenBuilder deepLinkingTokenBuilder, ClientCredentialsTokenBuilder clientCredentialsTokenBuilder) {
+	public OIDCFilter(String defaultFilterProcessesUrl, ToolDefinition toolDefinition) {
 		super(defaultFilterProcessesUrl);
 		this.toolDefinition = toolDefinition;
-		this.claimAccessor = claimAccessor;
-		this.deepLinkingTokenBuilder = deepLinkingTokenBuilder;
-		this.clientCredentialsTokenBuilder = clientCredentialsTokenBuilder;
 	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
 		ToolFactory toolFactory = new ToolFactory();
-		final Tool tool = toolFactory.from(toolDefinition, claimAccessor, deepLinkingTokenBuilder, clientCredentialsTokenBuilder, request);
+		final Tool tool = toolFactory.from(toolDefinition, request);
 
 		// get data from request
 		final LoginRequest loginRequest = LoginRequestFactory.from(request);

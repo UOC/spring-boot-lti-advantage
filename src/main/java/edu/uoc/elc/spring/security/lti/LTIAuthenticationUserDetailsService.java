@@ -23,15 +23,9 @@ import java.util.Collection;
  */
 public class LTIAuthenticationUserDetailsService<T extends Authentication> implements AuthenticationUserDetailsService<T> {
 	private final ToolDefinition toolDefinition;
-	private final ClaimAccessor claimAccessor;
-	private final DeepLinkingTokenBuilder deepLinkingTokenBuilder;
-	private final ClientCredentialsTokenBuilder clientCredentialsTokenBuilder;
 
-	public LTIAuthenticationUserDetailsService(ToolDefinition toolDefinition, ClaimAccessor claimAccessor, DeepLinkingTokenBuilder deepLinkingTokenBuilder, ClientCredentialsTokenBuilder clientCredentialsTokenBuilder) {
+	public LTIAuthenticationUserDetailsService(ToolDefinition toolDefinition) {
 		this.toolDefinition = toolDefinition;
-		this.claimAccessor = claimAccessor;
-		this.deepLinkingTokenBuilder = deepLinkingTokenBuilder;
-		this.clientCredentialsTokenBuilder = clientCredentialsTokenBuilder;
 	}
 
 	@Override
@@ -39,7 +33,7 @@ public class LTIAuthenticationUserDetailsService<T extends Authentication> imple
 		if (authentication.getCredentials() instanceof HttpServletRequest) {
 			HttpServletRequest request = (HttpServletRequest) authentication.getCredentials();
 			ToolFactory toolFactory = new ToolFactory();
-			final Tool tool = toolFactory.from(toolDefinition, claimAccessor, deepLinkingTokenBuilder, clientCredentialsTokenBuilder, request);
+			final Tool tool = toolFactory.from(toolDefinition, request);
 
 			if (tool.isValid()) {
 				Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();

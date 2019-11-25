@@ -3,9 +3,6 @@ package edu.uoc.elc.spring.security.lti.tool;
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.spring.security.lti.openid.HttpSessionOIDCLaunchSession;
 import edu.uoc.elc.spring.security.lti.utils.RequestUtils;
-import edu.uoc.lti.claims.ClaimAccessor;
-import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
-import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Xavi Aracil <xaracil@uoc.edu>
  */
 public class ToolFactory {
-	public Tool from(ToolDefinition toolDefinition, ClaimAccessor claimAccessor, DeepLinkingTokenBuilder deepLinkingTokenBuilder, ClientCredentialsTokenBuilder clientCredentialsTokenBuilder, HttpServletRequest request) {
+	public Tool from(ToolDefinition toolDefinition, HttpServletRequest request) {
 		final HttpSessionOIDCLaunchSession oidcLaunchSession = new HttpSessionOIDCLaunchSession(request);
 		Tool tool = new Tool(toolDefinition.getName(),
 						toolDefinition.getClientId(),
@@ -23,10 +20,10 @@ public class ToolFactory {
 						toolDefinition.getOidcAuthUrl(),
 						toolDefinition.getPrivateKey(),
 						toolDefinition.getPublicKey(),
-						claimAccessor,
+						toolDefinition.getClaimAccessor(),
 						oidcLaunchSession,
-						deepLinkingTokenBuilder,
-						clientCredentialsTokenBuilder);
+						toolDefinition.getDeepLinkingTokenBuilder(),
+						toolDefinition.getClientCredentialsTokenBuilder());
 
 		String token = RequestUtils.getToken(request);
 		String state = request.getParameter("state");

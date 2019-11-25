@@ -31,28 +31,22 @@ public class LTIAuthenticationDetailsSource implements AuthenticationDetailsSour
 	private final Attributes2GrantedAuthoritiesMapper ltiUserRoles2GrantedAuthoritiesMapper = new SimpleAttributes2GrantedAuthoritiesMapper();
 
 	private final ToolDefinition toolDefinition;
-	private final ClaimAccessor claimAccessor;
-	private final DeepLinkingTokenBuilder deepLinkingTokenBuilder;
-	private final ClientCredentialsTokenBuilder clientCredentialsTokenBuilder;
 
 	@Getter
 	private Tool tool;
 
 	public LTIAuthenticationDetailsSource() {
-		this(null, null, null, null);
+		this(null);
 	}
 
-	public LTIAuthenticationDetailsSource(ToolDefinition toolDefinition, ClaimAccessor claimAccessor, DeepLinkingTokenBuilder deepLinkingTokenBuilder, ClientCredentialsTokenBuilder clientCredentialsTokenBuilder) {
+	public LTIAuthenticationDetailsSource(ToolDefinition toolDefinition) {
 		this.toolDefinition = toolDefinition;
-		this.claimAccessor = claimAccessor;
-		this.deepLinkingTokenBuilder = deepLinkingTokenBuilder;
-		this.clientCredentialsTokenBuilder = clientCredentialsTokenBuilder;
 	}
 
 	protected Collection<String> getUserRoles(HttpServletRequest request) {
 		ArrayList<String> ltiUserRolesList = new ArrayList<>();
 		ToolFactory toolFactory = new ToolFactory();
-		this.tool = toolFactory.from(toolDefinition, claimAccessor, deepLinkingTokenBuilder, clientCredentialsTokenBuilder, request);
+		this.tool = toolFactory.from(toolDefinition, request);
 
 		String token = RequestUtils.getToken(request);
 		String state = request.getParameter("state");
