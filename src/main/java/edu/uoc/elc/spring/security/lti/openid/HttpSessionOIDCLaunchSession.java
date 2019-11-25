@@ -1,6 +1,6 @@
 package edu.uoc.elc.spring.security.lti.openid;
 
-import edu.uoc.elc.lti.tool.oidc.OIDCLaunchSession;
+import edu.uoc.lti.oidc.OIDCLaunchSession;
 import lombok.RequiredArgsConstructor;
 
 import javax.servlet.http.HttpServletRequest;

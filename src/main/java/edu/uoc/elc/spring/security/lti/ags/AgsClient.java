@@ -1,10 +1,10 @@
 package edu.uoc.elc.spring.security.lti.ags;
 
-import edu.uoc.elc.lti.platform.ags.LineItem;
-import edu.uoc.elc.lti.platform.ags.Result;
-import edu.uoc.elc.lti.platform.ags.Score;
 import edu.uoc.elc.lti.tool.AssignmentGradeService;
 import edu.uoc.elc.spring.security.lti.utils.QueryBuilder;
+import edu.uoc.lti.ags.LineItem;
+import edu.uoc.lti.ags.Result;
+import edu.uoc.lti.ags.Score;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -23,7 +23,7 @@ import java.util.List;
  * @author Xavi Aracil <xaracil@uoc.edu>
  */
 @RequiredArgsConstructor(staticName = "of")
-public class AgsClient implements edu.uoc.elc.lti.platform.ags.AgsClient {
+public class AgsClient implements edu.uoc.lti.ags.AgsClient {
 	private final OAuth2RestOperations restTemplate;
 	private final AssignmentGradeService assignmentGradeService;
 
