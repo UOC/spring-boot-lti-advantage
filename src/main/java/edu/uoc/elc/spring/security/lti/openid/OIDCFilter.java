@@ -1,9 +1,13 @@
 package edu.uoc.elc.spring.security.lti.openid;
 
 import edu.uoc.elc.lti.tool.Tool;
-import edu.uoc.elc.lti.tool.claims.JWSClaimAccessor;
 import edu.uoc.elc.lti.tool.oidc.LoginRequest;
 import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
+import edu.uoc.elc.spring.security.lti.tool.ToolFactory;
+import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
+import edu.uoc.lti.jwt.claims.JWSClaimAccessor;
+import edu.uoc.lti.jwt.client.JWSClientCredentialsTokenBuilder;
+import edu.uoc.lti.jwt.deeplink.JWSTokenBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -28,18 +32,8 @@ public class OIDCFilter extends AbstractAuthenticationProcessingFilter {
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-		final HttpSessionOIDCLaunchSession oidcLaunchSession = new HttpSessionOIDCLaunchSession(request);
-		final JWSClaimAccessor jwsClaimAccessor = new JWSClaimAccessor(toolDefinition.getKeySetUrl());
-		Tool tool = new Tool(toolDefinition.getName(),
-						toolDefinition.getClientId(),
-						toolDefinition.getPlatform(),
-						toolDefinition.getKeySetUrl(),
-						toolDefinition.getAccessTokenUrl(),
-						toolDefinition.getOidcAuthUrl(),
-						toolDefinition.getPrivateKey(),
-						toolDefinition.getPublicKey(),
-						jwsClaimAccessor,
-						oidcLaunchSession);
+		ToolFactory toolFactory = new ToolFactory();
+		final Tool tool = toolFactory.from(toolDefinition, request);
 
 		// get data from request
 		final LoginRequest loginRequest = LoginRequestFactory.from(request);
