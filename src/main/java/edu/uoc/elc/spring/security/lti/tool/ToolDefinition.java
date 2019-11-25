@@ -3,15 +3,9 @@ package edu.uoc.elc.spring.security.lti.tool;
 import edu.uoc.lti.claims.ClaimAccessor;
 import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
 import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
-
-import javax.validation.constraints.NotEmpty;
 
 /**
  * @author Xavi Aracil <xaracil@uoc.edu>
@@ -19,7 +13,7 @@ import javax.validation.constraints.NotEmpty;
 @Component
 @RequiredArgsConstructor
 public class ToolDefinition {
-	private final BasicDefinition basicDefinition;
+	private final BasicToolDefinition basicToolDefinition;
 	@Getter
 	private final ClaimAccessor claimAccessor;
 	@Getter
@@ -28,34 +22,34 @@ public class ToolDefinition {
 	private final ClientCredentialsTokenBuilder clientCredentialsTokenBuilder;
 
 	public String getName() {
-		return basicDefinition.getName();
+		return basicToolDefinition.getName();
 	}
 
 	public String getClientId() {
-		return basicDefinition.getClientId();
+		return basicToolDefinition.getClientId();
 	}
 
 	public String getKeySetUrl() {
-		return basicDefinition.getKeySetUrl();
+		return basicToolDefinition.getKeySetUrl();
 	}
 
 	public String getPlatform() {
-		return basicDefinition.getPlatform();
+		return basicToolDefinition.getPlatform();
 	}
 
 	public String getAccessTokenUrl() {
-		return basicDefinition.getAccessTokenUrl();
+		return basicToolDefinition.getAccessTokenUrl();
 	}
 
 	public String getOidcAuthUrl() {
-		return basicDefinition.getOidcAuthUrl();
+		return basicToolDefinition.getOidcAuthUrl();
 	}
 
 	public String getPrivateKey() {
-		return basicDefinition.getPrivateKey();
+		return basicToolDefinition.getPrivateKey();
 	}
 
 	public String getPublicKey() {
-		return basicDefinition.getPublicKey();
+		return basicToolDefinition.getPublicKey();
 	}
 }

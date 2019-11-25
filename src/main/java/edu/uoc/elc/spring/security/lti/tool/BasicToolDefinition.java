@@ -16,7 +16,7 @@ import javax.validation.constraints.NotEmpty;
 @Component
 @ConfigurationProperties(prefix = "lti")
 @Validated
-public class BasicDefinition {
+public class BasicToolDefinition {
 	@NotEmpty
 	private String name;
 	@NotEmpty

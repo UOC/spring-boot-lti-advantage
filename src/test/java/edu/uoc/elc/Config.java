@@ -1,7 +1,6 @@
 package edu.uoc.elc;
 
-import edu.uoc.elc.spring.security.lti.tool.BasicDefinition;
-import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
+import edu.uoc.elc.spring.security.lti.tool.BasicToolDefinition;
 import edu.uoc.lti.claims.ClaimAccessor;
 import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
 import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
@@ -27,17 +26,17 @@ import org.springframework.context.annotation.PropertySource;
 @TestConfiguration
 public class Config {
 	@Bean
-	public ClaimAccessor claimAccessor(BasicDefinition basicDefinition) {
-		return new JWSClaimAccessor(basicDefinition.getKeySetUrl());
+	public ClaimAccessor claimAccessor(BasicToolDefinition basicToolDefinition) {
+		return new JWSClaimAccessor(basicToolDefinition.getKeySetUrl());
 	}
 
 	@Bean
-	public DeepLinkingTokenBuilder deepLinkingTokenBuilder(BasicDefinition basicDefinition) {
-		return new JWSTokenBuilder(basicDefinition.getPublicKey(), basicDefinition.getPrivateKey());
+	public DeepLinkingTokenBuilder deepLinkingTokenBuilder(BasicToolDefinition basicToolDefinition) {
+		return new JWSTokenBuilder(basicToolDefinition.getPublicKey(), basicToolDefinition.getPrivateKey());
 	}
 
 	@Bean
-	public ClientCredentialsTokenBuilder clientCredentialsTokenBuilder(BasicDefinition basicDefinition) {
-		return new JWSClientCredentialsTokenBuilder(basicDefinition.getPublicKey(), basicDefinition.getPrivateKey());
+	public ClientCredentialsTokenBuilder clientCredentialsTokenBuilder(BasicToolDefinition basicToolDefinition) {
+		return new JWSClientCredentialsTokenBuilder(basicToolDefinition.getPublicKey(), basicToolDefinition.getPrivateKey());
 	}
 }
