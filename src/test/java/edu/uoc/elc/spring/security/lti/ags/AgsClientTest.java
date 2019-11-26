@@ -56,6 +56,7 @@ public class AgsClientTest {
 		final Tool tool = new Tool(toolDefinition.getName(),
 						toolDefinition.getClientId(),
 						toolDefinition.getPlatform(),
+						toolDefinition.getDeploymentId(),
 						toolDefinition.getKeySetUrl(),
 						toolDefinition.getAccessTokenUrl(),
 						toolDefinition.getOidcAuthUrl(),

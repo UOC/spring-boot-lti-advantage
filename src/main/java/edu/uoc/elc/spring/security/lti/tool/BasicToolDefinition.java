@@ -26,6 +26,8 @@ public class BasicToolDefinition {
 	@NotEmpty
 	private String platform;
 	@NotEmpty
+	private String deploymentId;
+	@NotEmpty
 	private String accessTokenUrl;
 	@NotEmpty
 	private String oidcAuthUrl;

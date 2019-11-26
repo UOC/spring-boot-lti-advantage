@@ -37,6 +37,10 @@ public class ToolDefinition {
 		return basicToolDefinition.getPlatform();
 	}
 
+	public String getDeploymentId() {
+		return basicToolDefinition.getDeploymentId();
+	}
+
 	public String getAccessTokenUrl() {
 		return basicToolDefinition.getAccessTokenUrl();
 	}
