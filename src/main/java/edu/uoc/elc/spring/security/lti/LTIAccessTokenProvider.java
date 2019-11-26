@@ -1,7 +1,7 @@
 package edu.uoc.elc.spring.security.lti;
 
+import edu.uoc.elc.lti.platform.accesstoken.AccessTokenResponse;
 import edu.uoc.elc.lti.tool.Tool;
-import edu.uoc.elc.lti.platform.AccessTokenResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
