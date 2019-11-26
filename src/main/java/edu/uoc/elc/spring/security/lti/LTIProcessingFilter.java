@@ -68,18 +68,4 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 
 		return "{ N.A. }";
 	}
-
-	private String getStateFromSession(HttpServletRequest httpServletRequest) {
-		return (String) httpServletRequest.getSession().getAttribute("currentLti1.3State");
-	}
-
-	private boolean stateIsValid(String state, String sessionState) {
-		if (state == null && sessionState == null) {
-			return true;
-		}
-		if (state != null) {
-			return state.equals(sessionState);
-		}
-		return false;
-	}
 }
