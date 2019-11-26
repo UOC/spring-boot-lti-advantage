@@ -1,5 +1,6 @@
 package edu.uoc.elc.spring.security.lti.tool;
 
+import edu.uoc.lti.accesstoken.AccessTokenRequestBuilder;
 import edu.uoc.lti.claims.ClaimAccessor;
 import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
 import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
@@ -20,6 +21,8 @@ public class ToolDefinition {
 	private final DeepLinkingTokenBuilder deepLinkingTokenBuilder;
 	@Getter
 	private final ClientCredentialsTokenBuilder clientCredentialsTokenBuilder;
+	@Getter
+	private final AccessTokenRequestBuilder accessTokenRequestBuilder;
 
 	public String getName() {
 		return basicToolDefinition.getName();

@@ -6,6 +6,7 @@ import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.lti.tool.oidc.InMemoryOIDCLaunchSession;
 import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
 import edu.uoc.elc.spring.security.lti.tool.ToolProvider;
+import edu.uoc.lti.accesstoken.AccessTokenRequestBuilder;
 import edu.uoc.lti.ags.*;
 import edu.uoc.lti.claims.ClaimAccessor;
 import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
@@ -43,6 +44,9 @@ public class AgsClientTest {
 	@Autowired
 	private ClientCredentialsTokenBuilder clientCredentialsTokenBuilder;
 
+	@Autowired
+	private AccessTokenRequestBuilder accessTokenRequestBuilder;
+
 	// mocked object
 	private AssignmentGradeService assignmentGradeService;
 
@@ -65,7 +69,8 @@ public class AgsClientTest {
 						claimAccessor,
 						launchSession,
 						deepLinkingTokenBuilder,
-						clientCredentialsTokenBuilder);
+						clientCredentialsTokenBuilder,
+						accessTokenRequestBuilder);
 
 
 		Assert.assertNotNull(tool);

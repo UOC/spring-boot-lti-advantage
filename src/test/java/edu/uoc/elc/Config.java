@@ -1,6 +1,8 @@
 package edu.uoc.elc;
 
 import edu.uoc.elc.spring.security.lti.tool.BasicToolDefinition;
+import edu.uoc.lti.accesstoken.AccessTokenRequestBuilder;
+import edu.uoc.lti.accesstoken.JSONAccessTokenRequestBuilderImpl;
 import edu.uoc.lti.claims.ClaimAccessor;
 import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
 import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
@@ -38,5 +40,10 @@ public class Config {
 	@Bean
 	public ClientCredentialsTokenBuilder clientCredentialsTokenBuilder(BasicToolDefinition basicToolDefinition) {
 		return new JWSClientCredentialsTokenBuilder(basicToolDefinition.getPublicKey(), basicToolDefinition.getPrivateKey());
+	}
+
+	@Bean
+	public AccessTokenRequestBuilder accessTokenRequestBuilder() {
+		return new JSONAccessTokenRequestBuilderImpl();
 	}
 }

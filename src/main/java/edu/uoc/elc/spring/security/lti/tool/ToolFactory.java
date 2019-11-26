@@ -24,7 +24,8 @@ public class ToolFactory {
 						toolDefinition.getClaimAccessor(),
 						oidcLaunchSession,
 						toolDefinition.getDeepLinkingTokenBuilder(),
-						toolDefinition.getClientCredentialsTokenBuilder());
+						toolDefinition.getClientCredentialsTokenBuilder(),
+						toolDefinition.getAccessTokenRequestBuilder());
 
 		String token = RequestUtils.getToken(request);
 		String state = request.getParameter("state");
