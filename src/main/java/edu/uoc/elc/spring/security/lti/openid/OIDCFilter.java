@@ -36,6 +36,9 @@ public class OIDCFilter extends AbstractAuthenticationProcessingFilter {
 
 		// get data from request
 		final LoginRequest loginRequest = LoginRequestFactory.from(request);
+		if (this.logger.isInfoEnabled()) {
+			this.logger.info("OIDC launch received with " + loginRequest.toString());
+		}
 
 		// verifications
 		try {
