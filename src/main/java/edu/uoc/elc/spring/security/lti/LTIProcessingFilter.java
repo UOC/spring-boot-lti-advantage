@@ -4,9 +4,8 @@ import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
 import edu.uoc.elc.spring.security.lti.tool.ToolFactory;
 import edu.uoc.elc.spring.security.lti.utils.RequestUtils;
-import edu.uoc.lti.claims.ClaimAccessor;
-import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
-import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,8 +44,13 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 		String token = RequestUtils.getToken(httpServletRequest);
 		String state = httpServletRequest.getParameter("state");
 
-		getTool(httpServletRequest).validate(token, state);
+		if (token == null) {
+			this.logger.info("The request is not a LTI request, so no principal at all. Returning current principal");
+			Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
+			return currentUser != null ? currentUser.getName() : null;
+		}
 
+		getTool(httpServletRequest).validate(token, state);
 		if (tool.isValid()) {
 			this.logger.info("Valid LTI call from " + tool.getUser().getId());
 			return tool.getUser().getId() + "-" + tool.getContext().getId();
@@ -61,9 +65,15 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 		String token = RequestUtils.getToken(httpServletRequest);
 		String state = httpServletRequest.getParameter("state");
 
+		if (token == null) {
+			this.logger.info("The request is not a LTI request, so no credentials at all. Returning current credentials");
+			Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
+			return currentUser != null ? currentUser.getCredentials() : null;
+		}
+
 		getTool(httpServletRequest).validate(token, state);
 		if (tool.isValid()) {
-			return httpServletRequest;
+			return tool;
 		}
 
 		return "{ N.A. }";
