@@ -3,6 +3,7 @@ package edu.uoc.elc.spring.security.lti.tool;
 import edu.uoc.elc.lti.platform.Member;
 import edu.uoc.elc.lti.platform.NamesRoleServiceResponse;
 import edu.uoc.elc.lti.tool.Tool;
+import edu.uoc.elc.lti.tool.deeplinking.Settings;
 import edu.uoc.elc.spring.security.lti.LTIAccessTokenProvider;
 import edu.uoc.elc.spring.security.lti.ags.AgsClient;
 import lombok.Getter;
@@ -21,7 +22,6 @@ import java.util.Objects;
  */
 @RequiredArgsConstructor
 public class ToolProvider {
-	@Getter
 	private final Tool tool;
 
 	private OAuth2RestOperations template;
@@ -38,6 +38,10 @@ public class ToolProvider {
 
 		final NamesRoleServiceResponse namesRoleServiceResponse = restOperations.getForObject(membershipUrl, NamesRoleServiceResponse.class);
 		return Objects.requireNonNull(namesRoleServiceResponse).getMembers();
+	}
+
+	public Settings getDeepLinkingSettings() {
+		return tool.getDeepLinkingSettings();
 	}
 
 	/**
