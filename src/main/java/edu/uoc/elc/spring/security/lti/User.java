@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * UserDetails from LTI context data. Includes Context information
@@ -37,6 +38,12 @@ public class User extends org.springframework.security.core.userdetails.User {
 
 	public String getFullName() {
 		return tool.getUser().getName();
+	}
+
+	public String getLocale() { return tool.getLocale(); }
+
+	public List<String> getRoles() {
+		return tool.getRoles();
 	}
 
 	public URI getPhotoUrl() {
