@@ -5,6 +5,7 @@ import edu.uoc.elc.lti.platform.NamesRoleServiceResponse;
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.spring.security.lti.LTIAccessTokenProvider;
 import edu.uoc.elc.spring.security.lti.ags.AgsClient;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
@@ -20,6 +21,7 @@ import java.util.Objects;
  */
 @RequiredArgsConstructor
 public class ToolProvider {
+	@Getter
 	private final Tool tool;
 
 	private OAuth2RestOperations template;
