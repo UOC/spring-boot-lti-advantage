@@ -2,9 +2,6 @@ package edu.uoc.elc.spring.security.lti;
 
 import edu.uoc.elc.spring.security.lti.openid.OIDCFilter;
 import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
-import edu.uoc.lti.claims.ClaimAccessor;
-import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
-import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -45,7 +42,7 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) {
 		PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
-		authenticationProvider.setPreAuthenticatedUserDetailsService(new LTIAuthenticationUserDetailsService<>(toolDefinition));
+		authenticationProvider.setPreAuthenticatedUserDetailsService(new LTIAuthenticationUserDetailsService<>());
 
 		auth.authenticationProvider(authenticationProvider);
 	}
