@@ -11,8 +11,10 @@ import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.AccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -32,12 +34,12 @@ public class NamesRoleServiceProvider {
 	 * Call to platform's Name and Role Service in order to get members
 	 * @return the members of the platform
 	 */
-	public List<Member> getMembers() {
+	public List<Member> getMembers() throws URISyntaxException {
 		if (!hasNameRoleService()) {
 			return Collections.EMPTY_LIST;
 		}
 
-		final String membershipUrl = getPlatformUrl();
+		final URI membershipUrl = getPlatformUri();
 		return getMembersFromServer(membershipUrl);
 	}
 
@@ -45,17 +47,23 @@ public class NamesRoleServiceProvider {
 		return namesRoleService != null;
 	}
 
-	private String getPlatformUrl() {
-		String membershipUrl = namesRoleService.getContext_memberships_url();
+	private URI getPlatformUri() throws URISyntaxException {
+		URI membershipUrl = new URI(namesRoleService.getContext_memberships_url());
+
 		if (resourceLink != null) {
-			membershipUrl += "?rlid=" + resourceLink.getId();
+			membershipUrl = appendResourceLinkIdToQuery(membershipUrl);
 		}
 		return membershipUrl;
 	}
-	private List<Member> getMembersFromServer(String url) {
+
+	private URI appendResourceLinkIdToQuery(URI uri) {
+		return UriComponentsBuilder.fromUri(uri).queryParam("rlid", resourceLink.getId()).build().toUri();
+	}
+
+	private List<Member> getMembersFromServer(URI uri) {
 		final OAuth2RestOperations restOperations = getTemplate();
 
-		final NamesRoleServiceResponse namesRoleServiceResponse = restOperations.getForObject(url, NamesRoleServiceResponse.class);
+		final NamesRoleServiceResponse namesRoleServiceResponse = restOperations.getForObject(uri, NamesRoleServiceResponse.class);
 		return Objects.requireNonNull(namesRoleServiceResponse).getMembers();
 	}
 
