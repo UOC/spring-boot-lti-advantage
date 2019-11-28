@@ -2,18 +2,16 @@ package edu.uoc.elc.spring.security.lti.tool;
 
 import edu.uoc.elc.lti.platform.Member;
 import edu.uoc.elc.lti.platform.NamesRoleServiceResponse;
-import edu.uoc.elc.lti.platform.deeplinking.DeepLinkingClient;
-import edu.uoc.elc.lti.tool.Tool;
-import edu.uoc.elc.lti.tool.deeplinking.Settings;
-import edu.uoc.elc.spring.security.lti.LTIAccessTokenProvider;
-import edu.uoc.elc.spring.security.lti.ags.AgsClient;
+import edu.uoc.elc.lti.tool.NamesRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.security.oauth2.client.token.AccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,34 +19,27 @@ import java.util.Objects;
  * @author Xavi Aracil <xaracil@uoc.edu>
  */
 @RequiredArgsConstructor
-public class ToolProvider {
-	private final Tool tool;
+public class NamesRoleServiceProvider {
+	private final AccessTokenProvider accessTokenProvider;
+	private final NamesRoleService namesRoleService;
 
 	private OAuth2RestOperations template;
 
-	private NamesRoleServiceProvider namesRoleServiceProvider;
-
-	public Settings getDeepLinkingSettings() {
-		return tool.getDeepLinkingSettings();
-	}
-
-	public DeepLinkingClient getDeepLinkingClient() {
-		return tool.getDeepLinkingClient();
-	}
-
-	public NamesRoleServiceProvider getNamesRoleServiceProvider() {
-		if (namesRoleServiceProvider == null) {
-			namesRoleServiceProvider = new NamesRoleServiceProvider(new LTIAccessTokenProvider(tool), tool.getNameRoleService());
-		}
-		return namesRoleServiceProvider;
-	}
-
 	/**
-	 * Return a client for platform's Assignment and Grade Service
-	 * @return client for platform's Assignment and Grade Service
+	 * Call to platform's Name and Role Service in order to get members
+	 * @return the members of the platform
 	 */
-	public AgsClient getAssignmentAndGradeService() {
-		return AgsClient.of(getTemplate(), tool.getAssignmentGradeService());
+	public List<Member> getMembers() {
+		if (!hasNameRoleService()) {
+			return Collections.EMPTY_LIST;
+		}
+
+		final String membershipUrl = namesRoleService.getContext_memberships_url();
+		return getMembersFromServer(membershipUrl);
+	}
+
+	public boolean hasNameRoleService() {
+		return namesRoleService != null;
 	}
 
 	private List<Member> getMembersFromServer(String url) {
@@ -64,7 +55,8 @@ public class ToolProvider {
 			OAuth2ClientContext context = new DefaultOAuth2ClientContext();
 
 			final OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(resource, context);
-			oAuth2RestTemplate.setAccessTokenProvider(new LTIAccessTokenProvider(tool));
+			oAuth2RestTemplate.setAccessTokenProvider(accessTokenProvider);
+			oAuth2RestTemplate.setMessageConverters(Collections.singletonList(new NamesRoleServiceMessageConverter()));
 			template = oAuth2RestTemplate;
 		}
 		return template;
