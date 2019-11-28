@@ -25,7 +25,8 @@ import java.util.List;
  */
 @RequiredArgsConstructor(staticName = "of")
 public class RestTemplateAgsClient implements AgsClient {
-	private final OAuth2RestOperations restTemplate;
+	private final OAuth2RestOperations restContainerTemplate;
+	private final OAuth2RestOperations restItemTemplate;
 	private final URI lineItemsUri;
 	private final boolean canReadGrades;
 	private final boolean canReadLineItems;
@@ -77,7 +78,7 @@ public class RestTemplateAgsClient implements AgsClient {
 		}
 
 		String uri = UriComponentsBuilder.fromUri(lineItemsUri).query(query).build().toUriString();
-		ResponseEntity<List<LineItem>> responseEntity = restTemplate.exchange(uri,
+		ResponseEntity<List<LineItem>> responseEntity = restContainerTemplate.exchange(uri,
 						HttpMethod.GET,
 						null,
 						new ParameterizedTypeReference<List<LineItem>>() {});
@@ -94,7 +95,7 @@ public class RestTemplateAgsClient implements AgsClient {
 		if (!canManageLineItems()) {
 			throw new MethodNotAllowedException("POST", null);
 		}
-		final ResponseEntity<LineItem> responseEntity = restTemplate.postForEntity(lineItemsUri, lineItem, LineItem.class);
+		final ResponseEntity<LineItem> responseEntity = restItemTemplate.postForEntity(lineItemsUri, lineItem, LineItem.class);
 		return responseEntity.getBody();
 	}
 
@@ -109,7 +110,7 @@ public class RestTemplateAgsClient implements AgsClient {
 			throw new MethodNotAllowedException("GET", null);
 		}
 
-		return restTemplate.getForObject(id, LineItem.class);
+		return restItemTemplate.getForObject(id, LineItem.class);
 	}
 
 	/**
@@ -124,7 +125,7 @@ public class RestTemplateAgsClient implements AgsClient {
 			throw new MethodNotAllowedException("PUT", null);
 		}
 
-		ResponseEntity<LineItem> responseEntity = restTemplate.exchange(id,
+		ResponseEntity<LineItem> responseEntity = restItemTemplate.exchange(id,
 						HttpMethod.PUT,
 						new HttpEntity<>(lineItem),
 						new ParameterizedTypeReference<LineItem>() {});
@@ -142,7 +143,7 @@ public class RestTemplateAgsClient implements AgsClient {
 			throw new MethodNotAllowedException("DELETE", null);
 		}
 
-		restTemplate.delete(id);
+		restItemTemplate.delete(id);
 	}
 
 	/**
@@ -171,7 +172,7 @@ public class RestTemplateAgsClient implements AgsClient {
 		String path = String.format( "%s/results", id);
 		String uri = path + (!StringUtils.isEmpty(query) ? "?" + query : "");
 
-		ResponseEntity<List<Result>> responseEntity = restTemplate.exchange(uri,
+		ResponseEntity<List<Result>> responseEntity = restContainerTemplate.exchange(uri,
 						HttpMethod.GET,
 						null,
 						new ParameterizedTypeReference<List<Result>>() {});
@@ -191,7 +192,7 @@ public class RestTemplateAgsClient implements AgsClient {
 		}
 		String uri = String.format( "%s/scores", lineItemId);
 
-		restTemplate.postForLocation(uri, score);
+		restItemTemplate.postForLocation(uri, score);
 		return true;
 	}
 }

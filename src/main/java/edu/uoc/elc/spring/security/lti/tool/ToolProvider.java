@@ -15,7 +15,6 @@ public class ToolProvider {
 
 	private NamesRoleServiceProvider namesRoleServiceProvider;
 	private AgsServiceProvider agsServiceProvider;
-
 	private LTIAccessTokenProvider ltiAccessTokenProvider;
 
 	public Settings getDeepLinkingSettings() {

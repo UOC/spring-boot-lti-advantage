@@ -17,7 +17,8 @@ import java.util.List;
  */
 @RequiredArgsConstructor(staticName = "of")
 public class AgsClientAdaptor {
-	private final OAuth2RestOperations restTemplate;
+	private final OAuth2RestOperations restContainerTemplate;
+	private final OAuth2RestOperations restItemTemplate;
 	private final AssignmentGradeService assignmentGradeService;
 	private final String resourceLinkId;
 	private AgsClient agsClient;
@@ -53,7 +54,8 @@ public class AgsClientAdaptor {
 	AgsClient getAgsClient() {
 		if (agsClient == null) {
 			try {
-				agsClient = RestTemplateAgsClient.of(restTemplate,
+				agsClient = RestTemplateAgsClient.of(restContainerTemplate,
+								restItemTemplate,
 								new URI(assignmentGradeService.getLineitems()),
 								assignmentGradeService.canReadGrades(),
 								assignmentGradeService.canReadLineItems(),

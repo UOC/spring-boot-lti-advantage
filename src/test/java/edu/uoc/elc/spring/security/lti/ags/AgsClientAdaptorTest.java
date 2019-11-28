@@ -2,8 +2,11 @@ package edu.uoc.elc.spring.security.lti.ags;
 
 import edu.uoc.elc.Config;
 import edu.uoc.elc.lti.tool.AssignmentGradeService;
+import edu.uoc.elc.lti.tool.ResourceLink;
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.lti.tool.oidc.InMemoryOIDCLaunchSession;
+import edu.uoc.elc.spring.security.lti.LTIAccessTokenProvider;
+import edu.uoc.elc.spring.security.lti.tool.AgsServiceProvider;
 import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
 import edu.uoc.elc.spring.security.lti.tool.ToolProvider;
 import edu.uoc.lti.accesstoken.AccessTokenRequestBuilder;
@@ -82,12 +85,12 @@ public class AgsClientAdaptorTest {
 		Tool spy = Mockito.spy(tool);
 		Mockito.when(spy.getAssignmentGradeService()).thenReturn(this.assignmentGradeService);
 		Mockito.when(spy.isValid()).thenReturn(true);
+		Mockito.when(spy.getResourceLink()).thenReturn(new ResourceLink());
 
+		AgsServiceProvider agsServiceProvider = new TestAgsServiceProvider(new LTIAccessTokenProvider(spy),
+						spy.getAssignmentGradeService(), spy.getResourceLink());
 
-		final ToolProvider toolProvider = new ToolProvider(spy);
-		Assert.assertNotNull(toolProvider);
-
-		this.sut = toolProvider.getAgsServiceProvider().getAssignmentAndGradeServiceClient();;
+		this.sut = agsServiceProvider.getAssignmentAndGradeServiceClient();;
 		Assert.assertNotNull(sut);
 	}
 
