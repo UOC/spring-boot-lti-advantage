@@ -38,7 +38,8 @@ public class ToolProvider {
 	public AgsServiceProvider getAgsServiceProvider() {
 		if (agsServiceProvider == null) {
 			agsServiceProvider = new AgsServiceProvider(getLTIAccessTokenProvider(),
-							tool.getAssignmentGradeService());
+							tool.getAssignmentGradeService(),
+							tool.getResourceLink());
 		}
 		return agsServiceProvider;
 	}

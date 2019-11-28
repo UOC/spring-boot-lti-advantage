@@ -1,6 +1,8 @@
 package edu.uoc.elc.spring.security.lti.tool;
 
 import edu.uoc.elc.lti.tool.AssignmentGradeService;
+import edu.uoc.elc.lti.tool.ResourceLink;
+import edu.uoc.elc.spring.security.lti.ags.AgsClientAdaptor;
 import edu.uoc.elc.spring.security.lti.ags.RestTemplateAgsClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
@@ -19,6 +21,7 @@ import java.util.Collections;
 public class AgsServiceProvider {
 	private final AccessTokenProvider accessTokenProvider;
 	private final AssignmentGradeService assignmentGradeService;
+	private final ResourceLink resourceLink;
 
 	private OAuth2RestOperations template;
 
@@ -34,8 +37,8 @@ public class AgsServiceProvider {
 		return template;
 	}
 
-	public RestTemplateAgsClient getAssignmentAndGradeServiceClient() {
-		return RestTemplateAgsClient.of(getTemplate(), getAssignmentGradeService());
+	public AgsClientAdaptor getAssignmentAndGradeServiceClient() {
+		return AgsClientAdaptor.of(getTemplate(), getAssignmentGradeService(), getResourceLinkId());
 	}
 
 	private AssignmentGradeService getAssignmentGradeService() {
@@ -49,5 +52,9 @@ public class AgsServiceProvider {
 		final AssignmentGradeService assignmentGradeService = new AssignmentGradeService();
 		assignmentGradeService.setScope(Collections.EMPTY_LIST);
 		return assignmentGradeService;
+	}
+
+	private String getResourceLinkId() {
+		return resourceLink != null ? resourceLink.getId() : null;
 	}
 }

@@ -21,6 +21,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.server.MethodNotAllowedException;
 
 import java.time.Instant;
 import java.util.List;
@@ -30,7 +31,7 @@ import java.util.List;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {Config.class})
-public class RestTemplateAgsClientTest {
+public class AgsClientAdaptorTest {
 
 	@Autowired
 	private ToolDefinition toolDefinition;
@@ -51,7 +52,7 @@ public class RestTemplateAgsClientTest {
 	private AssignmentGradeService assignmentGradeService;
 
 	// subject under test
-	private RestTemplateAgsClient sut;
+	private AgsClientAdaptor sut;
 
 	@Before
 	public void setUp() {
@@ -86,7 +87,7 @@ public class RestTemplateAgsClientTest {
 		final ToolProvider toolProvider = new ToolProvider(spy);
 		Assert.assertNotNull(toolProvider);
 
-		this.sut =  toolProvider.getAgsServiceProvider().getAssignmentAndGradeServiceClient();
+		this.sut = toolProvider.getAgsServiceProvider().getAssignmentAndGradeServiceClient();;
 		Assert.assertNotNull(sut);
 	}
 
@@ -97,13 +98,15 @@ public class RestTemplateAgsClientTest {
 	@After
 	public void tearDown() {
 		// delete all test lineItems
-		Mockito.when(this.assignmentGradeService.canManageLineItems()).thenReturn(true);
-		Mockito.when(this.assignmentGradeService.canReadLineItems()).thenReturn(true);
-		final List<LineItem> lineItems = this.sut.getLineItems(null, null, null, null, null);
-		for (LineItem lineItem : lineItems) {
-			if (TEST_LABEL.equals(lineItem.getLabel()) || TEST_TAG.equals(lineItem.getTag())) {
-				this.sut.deleteLineItem(lineItem.getId());
+		try {
+			final List<LineItem> lineItems = this.sut.getLineItems(null, null, null, null);
+			for (LineItem lineItem : lineItems) {
+				if (TEST_LABEL.equals(lineItem.getLabel()) || TEST_TAG.equals(lineItem.getTag())) {
+					this.sut.deleteLineItem(lineItem.getId());
+				}
 			}
+		} catch (MethodNotAllowedException ignored) {
+
 		}
 	}
 
@@ -116,58 +119,70 @@ public class RestTemplateAgsClientTest {
 	}
 
 	@Test
-	public void getCanGetLineItems() {
+	public void getCanGetLineItems() throws MethodNotAllowedException {
 		Mockito.when(this.assignmentGradeService.canReadLineItems()).thenReturn(true);
-		Assert.assertTrue(this.sut.canReadLineItems());
+		this.sut.getLineItems(null, null, null, null);
 		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canReadLineItems();
 	}
 
-	@Test
+	@Test(expected = MethodNotAllowedException.class)
 	public void getCantGetLineItems() {
 		Mockito.when(this.assignmentGradeService.canReadLineItems()).thenReturn(false);
-		Assert.assertFalse(this.sut.canReadLineItems());
+		this.sut.getLineItems(null, null, null, null);
 		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canReadLineItems();
 	}
 
 	@Test
-	public void getCanManageLineItems() {
+	public void getCanManageLineItems() throws MethodNotAllowedException {
 		Mockito.when(this.assignmentGradeService.canManageLineItems()).thenReturn(true);
-		Assert.assertTrue(this.sut.canManageLineItems());
+		setUpForTearDown();
+		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
+		this.sut.createLineItem(lineItem);
 		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canManageLineItems();
 	}
 
-	@Test
+	@Test(expected = MethodNotAllowedException.class)
 	public void getCantManageLineItems() {
 		Mockito.when(this.assignmentGradeService.canManageLineItems()).thenReturn(false);
-		Assert.assertFalse(this.sut.canManageLineItems());
+		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
+		this.sut.createLineItem(lineItem);
 		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canManageLineItems();
 	}
 
 	@Test
-	public void getCanReadGrades() {
+	public void getCanReadGrades() throws MethodNotAllowedException {
 		Mockito.when(this.assignmentGradeService.canReadGrades()).thenReturn(true);
-		Assert.assertTrue(this.sut.canReadGrades());
+		setUpForTearDown();
+
+		final LineItem newLineItem = createAndAssertNewLineItem();
+		this.sut.getLineItemResults(newLineItem.getId(), null, null, null);
 		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canReadGrades();
 	}
 
-	@Test
+	@Test(expected = MethodNotAllowedException.class)
 	public void getCantReadGrades() {
 		Mockito.when(this.assignmentGradeService.canReadGrades()).thenReturn(false);
-		Assert.assertFalse(this.sut.canReadGrades());
+		setUpForTearDown();
+		final LineItem newLineItem = createAndAssertNewLineItem();
+		this.sut.getLineItemResults(newLineItem.getId(), null, null, null);
 		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canReadGrades();
 	}
 
 	@Test
-	public void getCanScore() {
+	public void getCanScore() throws MethodNotAllowedException {
 		Mockito.when(this.assignmentGradeService.canScore()).thenReturn(true);
-		Assert.assertTrue(this.sut.canScore());
+		setUpForTearDown();
+		final LineItem newLineItem = createAndAssertNewLineItem();
+		this.sut.score(newLineItem.getId(), newScore());
 		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canScore();
 	}
 
-	@Test
+	@Test(expected = MethodNotAllowedException.class)
 	public void getCantScore() {
 		Mockito.when(this.assignmentGradeService.canScore()).thenReturn(false);
-		Assert.assertFalse(this.sut.canScore());
+		setUpForTearDown();
+		final LineItem newLineItem = createAndAssertNewLineItem();
+		this.sut.score(newLineItem.getId(), newScore());
 		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canScore();
 	}
 
@@ -175,10 +190,15 @@ public class RestTemplateAgsClientTest {
 	public void getLineItems() {
 		Mockito.when(this.assignmentGradeService.canReadLineItems()).thenReturn(true);
 
-		final List<LineItem> lineItems = this.sut.getLineItems(null, null, null, null, null);
+		final List<LineItem> lineItems = this.sut.getLineItems(null, null, null , null);
 		Assert.assertNotNull(lineItems);
 
 		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canReadLineItems();
+	}
+
+	private void setUpForTearDown() {
+		Mockito.when(this.assignmentGradeService.canManageLineItems()).thenReturn(true); // needed for tearDown
+		Mockito.when(this.assignmentGradeService.canReadLineItems()).thenReturn(true); // needed for tearDown
 	}
 
 	private void assertNewLineItem(LineItem expected, LineItem actual) {
@@ -206,13 +226,12 @@ public class RestTemplateAgsClientTest {
 	private int lineItemsSize() {
 		Mockito.when(this.assignmentGradeService.canReadLineItems()).thenReturn(true);
 		// get previous line items
-		final List<LineItem> lineItems = this.sut.getLineItems(null, null, null, null, null);
+		final List<LineItem> lineItems = this.sut.getLineItems(null, null, null, null);
 		Assert.assertNotNull(lineItems);
 		return lineItems.size();
 	}
 
 	private LineItem createAndAssertNewLineItem() {
-		Mockito.when(this.assignmentGradeService.canManageLineItems()).thenReturn(true);
 		LineItem lineItem = lineItem(TEST_LABEL, TEST_SCORE_MAXIMUM);
 		final LineItem newLineItem = this.sut.createLineItem(lineItem);
 		assertNewLineItem(lineItem, newLineItem);
@@ -221,6 +240,7 @@ public class RestTemplateAgsClientTest {
 
 	@Test
 	public void createLineItem() {
+		setUpForTearDown();
 		// get previous line items
 		final int previousSize = lineItemsSize();
 
@@ -233,8 +253,7 @@ public class RestTemplateAgsClientTest {
 
 	@Test
 	public void getLineItem() {
-		Mockito.when(this.assignmentGradeService.canReadLineItems()).thenReturn(true);
-
+		setUpForTearDown();
 		final LineItem newLineItem = createAndAssertNewLineItem();
 
 		final LineItem gottenLineItem = this.sut.getLineItem(newLineItem.getId());
@@ -244,6 +263,7 @@ public class RestTemplateAgsClientTest {
 
 	@Test
 	public void updateLineItem() {
+		setUpForTearDown();
 		final LineItem newLineItem = createAndAssertNewLineItem();
 
 		newLineItem.setLabel("Modified Label");
@@ -254,6 +274,7 @@ public class RestTemplateAgsClientTest {
 
 	@Test
 	public void deleteLineItem() {
+		setUpForTearDown();
 		// get previous line items
 		final int previousSize = lineItemsSize();
 
@@ -274,6 +295,7 @@ public class RestTemplateAgsClientTest {
 	@Test
 	public void getResults() {
 		Mockito.when(this.assignmentGradeService.canReadGrades()).thenReturn(true);
+		setUpForTearDown();
 
 		final LineItem newLineItem = createAndAssertNewLineItem();
 		final List<Result> lineItemResults = this.sut.getLineItemResults(newLineItem.getId(), null, null, null);
@@ -284,6 +306,7 @@ public class RestTemplateAgsClientTest {
 	public void score() {
 		Mockito.when(this.assignmentGradeService.canScore()).thenReturn(true);
 		Mockito.when(this.assignmentGradeService.canReadGrades()).thenReturn(true);
+		setUpForTearDown();
 
 		final LineItem newLineItem = createAndAssertNewLineItem();
 		final List<Result> previousLineItemResults = this.sut.getLineItemResults(newLineItem.getId(), null, null, null);
@@ -291,18 +314,7 @@ public class RestTemplateAgsClientTest {
 		int previousSize = previousLineItemResults.size();
 
 		// create a score
-		final Score score = Score.builder()
-						.userId("1ad4b33a2579a2a98ed7")
-						.scoreGiven(0.5)
-						.scoreMaximum(1.0)
-						.comment("comment")
-						.timeStamp(Instant.now())
-						.activityProgress(ActivityProgressEnum.COMPLETED)
-						.gradingProgress(GradingProgressEnum.PENDING_MANUAL)
-						.build();
-
-
-		final boolean result = this.sut.score(newLineItem.getId(), score);
+		final boolean result = this.sut.score(newLineItem.getId(), newScore());
 		Assert.assertTrue(result);
 		Mockito.verify(this.assignmentGradeService, Mockito.times(1)).canScore();
 
@@ -311,5 +323,17 @@ public class RestTemplateAgsClientTest {
 		int afterSize = afterLineItemResults.size();
 		Assert.assertEquals(afterSize, previousSize + 1);
 
+	}
+
+	private Score newScore() {
+		return Score.builder()
+						.userId("1ad4b33a2579a2a98ed7")
+						.scoreGiven(0.5)
+						.scoreMaximum(1.0)
+						.comment("comment")
+						.timeStamp(Instant.now())
+						.activityProgress(ActivityProgressEnum.COMPLETED)
+						.gradingProgress(GradingProgressEnum.PENDING_MANUAL)
+						.build();
 	}
 }

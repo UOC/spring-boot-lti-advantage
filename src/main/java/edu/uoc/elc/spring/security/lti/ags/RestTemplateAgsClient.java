@@ -1,6 +1,5 @@
 package edu.uoc.elc.spring.security.lti.ags;
 
-import edu.uoc.elc.lti.tool.AssignmentGradeService;
 import edu.uoc.elc.spring.security.lti.utils.QueryBuilder;
 import edu.uoc.lti.ags.AgsClient;
 import edu.uoc.lti.ags.LineItem;
@@ -14,8 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.MethodNotAllowedException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.AbstractMap;
 import java.util.List;
 
@@ -25,22 +26,26 @@ import java.util.List;
 @RequiredArgsConstructor(staticName = "of")
 public class RestTemplateAgsClient implements AgsClient {
 	private final OAuth2RestOperations restTemplate;
-	private final AssignmentGradeService assignmentGradeService;
+	private final URI lineItemsUri;
+	private final boolean canReadGrades;
+	private final boolean canReadLineItems;
+	private final boolean canManageLineItems;
+	private final boolean canScore;
 
 	public boolean canReadGrades() {
-		return assignmentGradeService.canReadGrades();
+		return canReadGrades;
 	}
 
 	public boolean canReadLineItems() {
-		return assignmentGradeService.canReadLineItems();
+		return canReadLineItems;
 	}
 
 	public boolean canManageLineItems() {
-		return assignmentGradeService.canManageLineItems();
+		return canManageLineItems;
 	}
 
 	public boolean canScore() {
-		return assignmentGradeService.canScore();
+		return canScore;
 	}
 
 	/**
@@ -61,6 +66,7 @@ public class RestTemplateAgsClient implements AgsClient {
 
 		String query;
 		try {
+
 			query = QueryBuilder.of(new AbstractMap.SimpleImmutableEntry("limit", limit),
 							new AbstractMap.SimpleImmutableEntry("page", page),
 							new AbstractMap.SimpleImmutableEntry("resourceLinkId", resourceLinkId),
@@ -70,7 +76,7 @@ public class RestTemplateAgsClient implements AgsClient {
 			throw new RuntimeException(e);
 		}
 
-		String uri = assignmentGradeService.getLineitems() + (!StringUtils.isEmpty(query) ? "?" + query : "");
+		String uri = UriComponentsBuilder.fromUri(lineItemsUri).query(query).build().toUriString();
 		ResponseEntity<List<LineItem>> responseEntity = restTemplate.exchange(uri,
 						HttpMethod.GET,
 						null,
@@ -88,7 +94,7 @@ public class RestTemplateAgsClient implements AgsClient {
 		if (!canManageLineItems()) {
 			throw new MethodNotAllowedException("POST", null);
 		}
-		final ResponseEntity<LineItem> responseEntity = restTemplate.postForEntity(assignmentGradeService.getLineitems(), lineItem, LineItem.class);
+		final ResponseEntity<LineItem> responseEntity = restTemplate.postForEntity(lineItemsUri, lineItem, LineItem.class);
 		return responseEntity.getBody();
 	}
 
