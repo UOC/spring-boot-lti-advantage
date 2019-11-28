@@ -1,6 +1,7 @@
 package edu.uoc.elc.spring.security.lti.tool;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.uoc.lti.namesrole.ContentTypes;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
@@ -22,10 +23,10 @@ public class NamesRoleServiceMessageConverter extends MappingJackson2HttpMessage
 	}
 
 	private void setContentType() {
-		setSupportedMediaTypes(Arrays.asList(
-						new MediaType("application", "vnd.ims.lti-nrps.v2.membershipcontainer+json", StandardCharsets.UTF_8),
-						new MediaType("application", "vnd.ims-nrps.v2.membershipcontainer+json", StandardCharsets.UTF_8)
-		));
+		setSupportedMediaTypes(Arrays.asList(mediaType(ContentTypes.REQUEST), mediaType(ContentTypes.RESPONSE)));
+	}
 
+	private MediaType mediaType(ContentTypes contentTypes) {
+		return new MediaType(contentTypes.getType(), contentTypes.getSubtype(), StandardCharsets.UTF_8);
 	}
 }
