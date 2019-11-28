@@ -3,6 +3,7 @@ package edu.uoc.elc.spring.security.lti.tool;
 import edu.uoc.elc.lti.platform.Member;
 import edu.uoc.elc.lti.platform.NamesRoleServiceResponse;
 import edu.uoc.elc.lti.tool.NamesRoleService;
+import edu.uoc.elc.lti.tool.ResourceLink;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
@@ -11,6 +12,7 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.AccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +24,7 @@ import java.util.Objects;
 public class NamesRoleServiceProvider {
 	private final AccessTokenProvider accessTokenProvider;
 	private final NamesRoleService namesRoleService;
+	private final ResourceLink resourceLink;
 
 	private OAuth2RestOperations template;
 
@@ -34,7 +37,7 @@ public class NamesRoleServiceProvider {
 			return Collections.EMPTY_LIST;
 		}
 
-		final String membershipUrl = namesRoleService.getContext_memberships_url();
+		final String membershipUrl = getPlatformUrl();
 		return getMembersFromServer(membershipUrl);
 	}
 
@@ -42,6 +45,13 @@ public class NamesRoleServiceProvider {
 		return namesRoleService != null;
 	}
 
+	private String getPlatformUrl() {
+		String membershipUrl = namesRoleService.getContext_memberships_url();
+		if (resourceLink != null) {
+			membershipUrl += "?rlid=" + resourceLink.getId();
+		}
+		return membershipUrl;
+	}
 	private List<Member> getMembersFromServer(String url) {
 		final OAuth2RestOperations restOperations = getTemplate();
 

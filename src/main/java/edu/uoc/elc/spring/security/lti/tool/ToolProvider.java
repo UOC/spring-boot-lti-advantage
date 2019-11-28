@@ -38,7 +38,9 @@ public class ToolProvider {
 
 	public NamesRoleServiceProvider getNamesRoleServiceProvider() {
 		if (namesRoleServiceProvider == null) {
-			namesRoleServiceProvider = new NamesRoleServiceProvider(new LTIAccessTokenProvider(tool), tool.getNameRoleService());
+			namesRoleServiceProvider = new NamesRoleServiceProvider(new LTIAccessTokenProvider(tool),
+							tool.getNameRoleService(),
+							tool.getResourceLink());
 		}
 		return namesRoleServiceProvider;
 	}
