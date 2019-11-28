@@ -53,13 +53,6 @@ public class ToolProvider {
 		return AgsClient.of(getTemplate(), tool.getAssignmentGradeService());
 	}
 
-	private List<Member> getMembersFromServer(String url) {
-		final OAuth2RestOperations restOperations = getTemplate();
-
-		final NamesRoleServiceResponse namesRoleServiceResponse = restOperations.getForObject(url, NamesRoleServiceResponse.class);
-		return Objects.requireNonNull(namesRoleServiceResponse).getMembers();
-	}
-
 	private OAuth2RestOperations getTemplate() {
 		if (template == null) {
 			final ClientCredentialsResourceDetails resource = new ClientCredentialsResourceDetails();
