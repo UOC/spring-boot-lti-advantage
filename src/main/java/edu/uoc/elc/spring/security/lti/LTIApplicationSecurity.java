@@ -32,11 +32,16 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 		return preAuthFilter;
 	}
 
+	private final static String OIDC_LAUNCH_URL = "/oidclaunch";
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		final LTIProcessingFilter preAuthFilter = getPreAuthFilter();
 
-		http.addFilter(preAuthFilter).addFilterAfter(oidcFilter(), preAuthFilter.getClass());
+		http.addFilter(preAuthFilter)
+						.addFilterAfter(oidcFilter(), preAuthFilter.getClass())
+						.authorizeRequests()
+						.antMatchers(OIDC_LAUNCH_URL).permitAll();
 	}
 
 	@Autowired
@@ -47,10 +52,7 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 		auth.authenticationProvider(authenticationProvider);
 	}
 
-	private final static String OIDC_URI = "/login";
-
-
 	private OIDCFilter oidcFilter() {
-		return new OIDCFilter(OIDC_URI, toolDefinition);
+		return new OIDCFilter(OIDC_LAUNCH_URL, toolDefinition);
 	}
 }
