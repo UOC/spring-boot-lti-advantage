@@ -30,7 +30,7 @@ import java.util.List;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {Config.class})
-public class AgsClientTest {
+public class RestTemplateAgsClientTest {
 
 	@Autowired
 	private ToolDefinition toolDefinition;
@@ -51,7 +51,7 @@ public class AgsClientTest {
 	private AssignmentGradeService assignmentGradeService;
 
 	// subject under test
-	private AgsClient sut;
+	private RestTemplateAgsClient sut;
 
 	@Before
 	public void setUp() {
@@ -71,8 +71,6 @@ public class AgsClientTest {
 						deepLinkingTokenBuilder,
 						clientCredentialsTokenBuilder,
 						accessTokenRequestBuilder);
-
-
 		Assert.assertNotNull(tool);
 
 		// mock service
@@ -87,7 +85,8 @@ public class AgsClientTest {
 
 		final ToolProvider toolProvider = new ToolProvider(spy);
 		Assert.assertNotNull(toolProvider);
-		this.sut = toolProvider.getAssignmentAndGradeService();
+
+		this.sut =  toolProvider.getAgsServiceProvider().getAssignmentAndGradeServiceClient();
 		Assert.assertNotNull(sut);
 	}
 
