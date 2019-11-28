@@ -28,6 +28,7 @@ public class AgsClientAdaptor {
 	}
 
 	public LineItem createLineItem(LineItem lineItem) {
+		lineItem.setResourceLinkId(resourceLinkId);
 		return getAgsClient().createLineItem(lineItem);
 	}
 
@@ -36,6 +37,7 @@ public class AgsClientAdaptor {
 	}
 
 	public LineItem updateLineItem(String id, LineItem lineItem) {
+		lineItem.setResourceLinkId(resourceLinkId);
 		return getAgsClient().updateLineItem(id, lineItem);
 	}
 
