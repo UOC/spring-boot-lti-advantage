@@ -4,6 +4,7 @@ import edu.uoc.elc.lti.platform.deeplinking.DeepLinkingClient;
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.lti.tool.deeplinking.Settings;
 import edu.uoc.elc.spring.security.lti.LTIAccessTokenProvider;
+import edu.uoc.elc.spring.security.lti.ags.RestTemplateFactory;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ToolProvider {
 	private final Tool tool;
+	private final RestTemplateFactory restTemplateFactory;
 
 	private NamesRoleServiceProvider namesRoleServiceProvider;
 	private AgsServiceProvider agsServiceProvider;
@@ -37,8 +39,8 @@ public class ToolProvider {
 	public AgsServiceProvider getAgsServiceProvider() {
 		if (agsServiceProvider == null) {
 			agsServiceProvider = new AgsServiceProvider(getLTIAccessTokenProvider(),
-							tool.getAssignmentGradeService(),
-							tool.getResourceLink());
+							tool.getAssignmentGradeServiceClientFactory(),
+							restTemplateFactory);
 		}
 		return agsServiceProvider;
 	}

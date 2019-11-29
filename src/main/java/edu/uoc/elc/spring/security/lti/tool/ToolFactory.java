@@ -1,6 +1,7 @@
 package edu.uoc.elc.spring.security.lti.tool;
 
 import edu.uoc.elc.lti.tool.Tool;
+import edu.uoc.elc.lti.tool.ToolDefinition;
 import edu.uoc.elc.spring.security.lti.openid.HttpSessionOIDCLaunchSession;
 import edu.uoc.elc.spring.security.lti.utils.RequestUtils;
 
@@ -10,22 +11,13 @@ import javax.servlet.http.HttpServletRequest;
  * @author Xavi Aracil <xaracil@uoc.edu>
  */
 public class ToolFactory {
-	public Tool from(ToolDefinition toolDefinition, HttpServletRequest request) {
+	public Tool from(ToolDefinitionBean toolDefinitionBean, HttpServletRequest request) {
 		final HttpSessionOIDCLaunchSession oidcLaunchSession = new HttpSessionOIDCLaunchSession(request);
-		Tool tool = new Tool(toolDefinition.getName(),
-						toolDefinition.getClientId(),
-						toolDefinition.getPlatform(),
-						toolDefinition.getDeploymentId(),
-						toolDefinition.getKeySetUrl(),
-						toolDefinition.getAccessTokenUrl(),
-						toolDefinition.getOidcAuthUrl(),
-						toolDefinition.getPrivateKey(),
-						toolDefinition.getPublicKey(),
-						toolDefinition.getClaimAccessor(),
+		final ToolDefinition toolDefinition = ToolDefinitionFactory.from(toolDefinitionBean);
+		Tool tool = new Tool(toolDefinition,
+						toolDefinitionBean.getClaimAccessor(),
 						oidcLaunchSession,
-						toolDefinition.getDeepLinkingTokenBuilder(),
-						toolDefinition.getClientCredentialsTokenBuilder(),
-						toolDefinition.getAccessTokenRequestBuilder());
+						toolDefinitionBean.getBuilders());
 
 		String token = RequestUtils.getToken(request);
 		String state = request.getParameter("state");

@@ -1,7 +1,7 @@
 package edu.uoc.elc.spring.security.lti;
 
 import edu.uoc.elc.spring.security.lti.openid.OIDCFilter;
-import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
+import edu.uoc.elc.spring.security.lti.tool.ToolDefinitionBean;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,14 +18,14 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 @ComponentScan(value = {"edu.uoc.elc.spring.security.lti.mvc", "edu.uoc.elc.spring.security.lti.tool"})
 public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	@Getter
-	final ToolDefinition toolDefinition;
+	final ToolDefinitionBean toolDefinitionBean;
 
-	public LTIApplicationSecurity(ToolDefinition toolDefinition) {
-		this.toolDefinition = toolDefinition;
+	public LTIApplicationSecurity(ToolDefinitionBean toolDefinitionBean) {
+		this.toolDefinitionBean = toolDefinitionBean;
 	}
 
 	protected LTIProcessingFilter getPreAuthFilter() throws Exception {
-		LTIProcessingFilter preAuthFilter = new LTIProcessingFilter(toolDefinition);
+		LTIProcessingFilter preAuthFilter = new LTIProcessingFilter(toolDefinitionBean);
 
 		preAuthFilter.setCheckForPrincipalChanges(true);
 		preAuthFilter.setAuthenticationManager(authenticationManager());
@@ -53,6 +53,6 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	}
 
 	private OIDCFilter oidcFilter() {
-		return new OIDCFilter(OIDC_LAUNCH_URL, toolDefinition);
+		return new OIDCFilter(OIDC_LAUNCH_URL, toolDefinitionBean);
 	}
 }

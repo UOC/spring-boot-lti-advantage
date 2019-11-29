@@ -2,11 +2,8 @@ package edu.uoc.elc.spring.security.lti.openid;
 
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.lti.tool.oidc.LoginRequest;
-import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
+import edu.uoc.elc.spring.security.lti.tool.ToolDefinitionBean;
 import edu.uoc.elc.spring.security.lti.tool.ToolFactory;
-import edu.uoc.lti.claims.ClaimAccessor;
-import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
-import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -22,17 +19,17 @@ import java.net.URISyntaxException;
  * @author Xavi Aracil <xaracil@uoc.edu>
  */
 public class OIDCFilter extends AbstractAuthenticationProcessingFilter {
-	private final ToolDefinition toolDefinition;
+	private final ToolDefinitionBean toolDefinitionBean;
 
-	public OIDCFilter(String defaultFilterProcessesUrl, ToolDefinition toolDefinition) {
+	public OIDCFilter(String defaultFilterProcessesUrl, ToolDefinitionBean toolDefinitionBean) {
 		super(defaultFilterProcessesUrl);
-		this.toolDefinition = toolDefinition;
+		this.toolDefinitionBean = toolDefinitionBean;
 	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
 		ToolFactory toolFactory = new ToolFactory();
-		final Tool tool = toolFactory.from(toolDefinition, request);
+		final Tool tool = toolFactory.from(toolDefinitionBean, request);
 
 		// get data from request
 		final LoginRequest loginRequest = LoginRequestFactory.from(request);

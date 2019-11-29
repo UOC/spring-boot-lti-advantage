@@ -1,7 +1,7 @@
 package edu.uoc.elc.spring.security.lti;
 
 import edu.uoc.elc.lti.tool.Tool;
-import edu.uoc.elc.spring.security.lti.tool.ToolDefinition;
+import edu.uoc.elc.spring.security.lti.tool.ToolDefinitionBean;
 import edu.uoc.elc.spring.security.lti.tool.ToolFactory;
 import edu.uoc.elc.spring.security.lti.utils.RequestUtils;
 import org.springframework.security.core.Authentication;
@@ -17,22 +17,17 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
-	private final ToolDefinition toolDefinition;
+	private final ToolDefinitionBean toolDefinitionBean;
 
-	private Tool tool;
-
-	public LTIProcessingFilter(ToolDefinition toolDefinition) {
+	public LTIProcessingFilter(ToolDefinitionBean toolDefinitionBean) {
 		super();
-		this.toolDefinition = toolDefinition;
-		setAuthenticationDetailsSource(new LTIAuthenticationDetailsSource(toolDefinition));
+		this.toolDefinitionBean = toolDefinitionBean;
+		setAuthenticationDetailsSource(new LTIAuthenticationDetailsSource(toolDefinitionBean));
 	}
 
 	private Tool getTool(HttpServletRequest httpServletRequest) {
-		if (tool == null) {
-			ToolFactory toolFactory = new ToolFactory();
-			this.tool = toolFactory.from(toolDefinition, httpServletRequest);
-		}
-		return this.tool;
+		ToolFactory toolFactory = new ToolFactory();
+		return toolFactory.from(toolDefinitionBean, httpServletRequest);
 	}
 
 	@Override
@@ -50,7 +45,8 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 			return currentUser != null ? currentUser.getName() : null;
 		}
 
-		getTool(httpServletRequest).validate(token, state);
+		final Tool tool = getTool(httpServletRequest);
+		tool.validate(token, state);
 		if (tool.isValid()) {
 			this.logger.info("Valid LTI call from " + tool.getUser().getId());
 			return tool.getUser().getId() + (tool.getContext() != null ? "-" + tool.getContext().getId() : "");
@@ -59,7 +55,6 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 		return null;
 	}
 
-	// Store LTI context in credentials
 	@Override
 	protected Object getPreAuthenticatedCredentials(HttpServletRequest httpServletRequest) {
 		String token = RequestUtils.getToken(httpServletRequest);
@@ -71,7 +66,8 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 			return currentUser != null ? currentUser.getCredentials() : null;
 		}
 
-		getTool(httpServletRequest).validate(token, state);
+		final Tool tool = getTool(httpServletRequest);
+		tool.validate(token, state);
 		if (tool.isValid()) {
 			return tool;
 		}

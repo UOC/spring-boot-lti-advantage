@@ -1,5 +1,6 @@
 package edu.uoc.elc.spring.security.lti.tool;
 
+import edu.uoc.elc.lti.tool.ToolBuilders;
 import edu.uoc.lti.accesstoken.AccessTokenRequestBuilder;
 import edu.uoc.lti.claims.ClaimAccessor;
 import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
@@ -13,15 +14,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class ToolDefinition {
+public class ToolDefinitionBean {
 	private final BasicToolDefinition basicToolDefinition;
 	@Getter
 	private final ClaimAccessor claimAccessor;
-	@Getter
+
 	private final DeepLinkingTokenBuilder deepLinkingTokenBuilder;
-	@Getter
 	private final ClientCredentialsTokenBuilder clientCredentialsTokenBuilder;
-	@Getter
 	private final AccessTokenRequestBuilder accessTokenRequestBuilder;
 
 	public String getName() {
@@ -58,5 +57,9 @@ public class ToolDefinition {
 
 	public String getPublicKey() {
 		return basicToolDefinition.getPublicKey();
+	}
+
+	public ToolBuilders getBuilders() {
+		return new ToolBuilders(clientCredentialsTokenBuilder, accessTokenRequestBuilder, deepLinkingTokenBuilder);
 	}
 }

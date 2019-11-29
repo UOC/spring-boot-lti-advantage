@@ -1,7 +1,9 @@
 package edu.uoc.elc.spring.security.lti.mvc;
 
+import edu.uoc.elc.spring.security.lti.ags.RestTemplateFactory;
 import edu.uoc.elc.spring.security.lti.tool.ToolProvider;
 import edu.uoc.elc.spring.security.lti.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -17,7 +19,10 @@ import java.security.Principal;
  * @author Xavi Aracil <xaracil@uoc.edu>
  */
 @Component
+@RequiredArgsConstructor
 public class CurrentToolHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
+	private final RestTemplateFactory restTemplateFactory;
+
 	@Override
 	public boolean supportsParameter(MethodParameter methodParameter) {
 		return methodParameter.getParameterType().equals(ToolProvider.class);
@@ -30,7 +35,7 @@ public class CurrentToolHandlerMethodArgumentResolver implements HandlerMethodAr
 			if (principal != null) {
 				User user = (User) ((Authentication) principal).getPrincipal();
 				if (user != null) {
-					return new ToolProvider(user.getTool());
+					return new ToolProvider(user.getTool(), restTemplateFactory);
 				}
 			}
 		}
