@@ -36,4 +36,8 @@ public class AgsServiceProvider {
 		RestTemplateScoreServiceClientFactory factory = new RestTemplateScoreServiceClientFactory(restTemplateFactory);
 		return clientFactory.getScoreServiceClient(factory.of(accessTokenProvider));
 	}
+
+	public boolean hasAgsService() {
+		return clientFactory.hasAgsService();
+	}
 }
