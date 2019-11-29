@@ -9,7 +9,6 @@ import edu.uoc.elc.spring.security.lti.ags.RestTemplateLineItemServiceClientFact
 import edu.uoc.elc.spring.security.lti.ags.RestTemplateResultServiceClientFactory;
 import edu.uoc.elc.spring.security.lti.ags.RestTemplateScoreServiceClientFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.token.AccessTokenProvider;
 
 /**
@@ -20,9 +19,6 @@ public class AgsServiceProvider {
 	private final AccessTokenProvider accessTokenProvider;
 	private final AgsClientFactory clientFactory;
 	private final RestTemplateFactory restTemplateFactory;
-
-	private OAuth2RestOperations containerTemplate;
-	private OAuth2RestOperations intemTemplate;
 
 	public ToolLineItemServiceClient getLineItemsServiceClient() {
 		RestTemplateLineItemServiceClientFactory factory = new RestTemplateLineItemServiceClientFactory(restTemplateFactory);
