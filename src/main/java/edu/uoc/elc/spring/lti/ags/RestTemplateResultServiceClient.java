@@ -1,15 +1,16 @@
 package edu.uoc.elc.spring.lti.ags;
 
-import edu.uoc.elc.spring.lti.security.utils.QueryBuilder;
-import edu.uoc.lti.ags.*;
+import edu.uoc.lti.ags.Result;
+import edu.uoc.lti.ags.ResultServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
-import org.springframework.util.StringUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.UnsupportedEncodingException;
-import java.util.AbstractMap;
 import java.util.List;
 
 /**
@@ -30,22 +31,22 @@ public class RestTemplateResultServiceClient implements ResultServiceClient {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Result> getLineItemResults(String id, Integer limit, Integer page, String userId) {
-		String query;
-		try {
-			query = QueryBuilder.of(new AbstractMap.SimpleImmutableEntry("limit", limit),
-							new AbstractMap.SimpleImmutableEntry("page", page),
-							new AbstractMap.SimpleImmutableEntry("userId", userId));
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-
 		String path = String.format( "%s/results", id);
-		String uri = path + (!StringUtils.isEmpty(query) ? "?" + query : "");
+		final MultiValueMap<String, String> query = queryWithParams(limit, page, userId);
+		final String uri = UriComponentsBuilder.fromUriString(path).queryParams(query).build().toUriString();
 
 		ResponseEntity<List<Result>> responseEntity = restTemplate.exchange(uri,
 						HttpMethod.GET,
 						null,
 						new ParameterizedTypeReference<List<Result>>() {});
 		return responseEntity.getBody();
+	}
+
+	private MultiValueMap<String, String> queryWithParams(Integer limit, Integer page, String userId) {
+		MultiValueMap<String, String> query = new LinkedMultiValueMap<>();
+		query.add("limit", limit != null ? String.valueOf(limit) : null);
+		query.add("page", limit != null ? String.valueOf(page) : null);
+		query.add("userId", userId);
+		return query;
 	}
 }
