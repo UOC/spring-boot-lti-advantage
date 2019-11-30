@@ -1,6 +1,6 @@
 package edu.uoc.elc;
 
-import edu.uoc.elc.spring.security.lti.tool.BasicToolDefinition;
+import edu.uoc.elc.spring.lti.tool.BasicToolDefinition;
 import edu.uoc.lti.accesstoken.AccessTokenRequestBuilder;
 import edu.uoc.lti.accesstoken.JSONAccessTokenRequestBuilderImpl;
 import edu.uoc.lti.claims.ClaimAccessor;
@@ -22,7 +22,7 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration
 @EnableAutoConfiguration
-@ComponentScan("edu.uoc.elc.spring.security.lti.tool")
+@ComponentScan("edu.uoc.elc.spring.lti.tool")
 @EnableConfigurationProperties
 @PropertySource("application.properties")
 @TestConfiguration
