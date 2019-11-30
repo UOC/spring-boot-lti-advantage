@@ -3,7 +3,7 @@ package edu.uoc.elc.spring.lti.security;
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
 import edu.uoc.elc.spring.lti.tool.ToolFactory;
-import edu.uoc.elc.spring.lti.security.utils.RequestUtils;
+import edu.uoc.elc.spring.lti.security.utils.TokenFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
@@ -36,7 +36,7 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 			this.logger.debug("Checking if request is a valid LTI");
 		}
 
-		String token = RequestUtils.getToken(httpServletRequest);
+		String token = TokenFactory.from(httpServletRequest);
 		String state = httpServletRequest.getParameter("state");
 
 		if (token == null) {
@@ -57,7 +57,7 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 
 	@Override
 	protected Object getPreAuthenticatedCredentials(HttpServletRequest httpServletRequest) {
-		String token = RequestUtils.getToken(httpServletRequest);
+		String token = TokenFactory.from(httpServletRequest);
 		String state = httpServletRequest.getParameter("state");
 
 		if (token == null) {

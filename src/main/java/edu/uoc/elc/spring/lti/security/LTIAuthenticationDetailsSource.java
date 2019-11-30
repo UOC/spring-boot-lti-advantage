@@ -3,7 +3,7 @@ package edu.uoc.elc.spring.lti.security;
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
 import edu.uoc.elc.spring.lti.tool.ToolFactory;
-import edu.uoc.elc.spring.lti.security.utils.RequestUtils;
+import edu.uoc.elc.spring.lti.security.utils.TokenFactory;
 import lombok.Getter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +45,7 @@ public class LTIAuthenticationDetailsSource implements AuthenticationDetailsSour
 		ToolFactory toolFactory = new ToolFactory();
 		this.tool = toolFactory.from(toolDefinitionBean, request);
 
-		String token = RequestUtils.getToken(request);
+		String token = TokenFactory.from(request);
 		String state = request.getParameter("state");
 		tool.validate(token, state);
 
