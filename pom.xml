@@ -24,6 +24,13 @@
 		<java.version>1.8</java.version>
 	</properties>
 
+	<scm>
+		<connection>scm:git:git@devel.elearnlab.org:elearn/spring-boot-lti-advantage.git</connection>
+		<developerConnection>scm:git:git@devel.elearnlab.org:elearn/spring-boot-lti-advantage.git</developerConnection>
+		<url>https://devel.elearnlab.org/elearn/spring-boot-lti-advantage</url>
+		<tag>HEAD</tag>
+	</scm>
+
 	<repositories>
 		<repository>
 			<id>devel.elearnlab.org</id>
