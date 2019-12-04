@@ -3,7 +3,7 @@ package edu.uoc.elc.spring.lti.tool;
 import edu.uoc.elc.lti.tool.ToolDefinition;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 public class ToolDefinitionFactory {
 	public static ToolDefinition from(ToolDefinitionBean toolDefinitionBean) {

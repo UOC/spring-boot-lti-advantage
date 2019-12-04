@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 @RequiredArgsConstructor(staticName = "of")
 public class RestTemplateLineItemServiceClient implements LineItemServiceClient {

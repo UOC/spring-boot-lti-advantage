@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 @AllArgsConstructor
 public class LTIAccessTokenProvider implements AccessTokenProvider {

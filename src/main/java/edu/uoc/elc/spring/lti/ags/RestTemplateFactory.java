@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.client.token.grant.client.ClientCrede
 import java.util.Collections;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 public class RestTemplateFactory {
 	public OAuth2RestTemplate from(AccessTokenProvider accessTokenProvider, HttpMessageConverter messageConverter) {

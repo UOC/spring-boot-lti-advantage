@@ -5,7 +5,7 @@ import edu.uoc.elc.lti.tool.oidc.LoginRequest;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 public class LoginRequestFactory {
 	public static LoginRequest from(HttpServletRequest request) {

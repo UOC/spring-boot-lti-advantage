@@ -16,7 +16,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import java.security.Principal;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 @Component
 @RequiredArgsConstructor

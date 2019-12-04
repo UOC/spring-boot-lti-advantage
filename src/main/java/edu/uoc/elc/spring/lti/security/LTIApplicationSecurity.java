@@ -12,7 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 @Configuration
 @ComponentScan(value = {"edu.uoc.elc.spring.security.lti.mvc", "edu.uoc.elc.spring.security.lti.tool"})

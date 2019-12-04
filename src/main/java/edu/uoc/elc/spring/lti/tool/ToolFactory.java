@@ -8,7 +8,7 @@ import edu.uoc.elc.spring.lti.security.utils.TokenFactory;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 public class ToolFactory {
 	public Tool from(ToolDefinitionBean toolDefinitionBean, HttpServletRequest request) {

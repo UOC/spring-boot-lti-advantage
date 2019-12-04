@@ -30,7 +30,7 @@ import java.net.URISyntaxException;
 import java.time.Instant;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {Config.class})

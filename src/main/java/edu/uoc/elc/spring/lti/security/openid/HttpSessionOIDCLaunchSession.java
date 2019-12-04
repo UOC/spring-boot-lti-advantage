@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 @RequiredArgsConstructor
 public class HttpSessionOIDCLaunchSession implements OIDCLaunchSession {

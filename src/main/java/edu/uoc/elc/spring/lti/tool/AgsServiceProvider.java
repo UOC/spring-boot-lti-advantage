@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.token.AccessTokenProvider;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 @RequiredArgsConstructor
 public class AgsServiceProvider {

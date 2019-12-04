@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 public class AgsMessageConverter extends MappingJackson2HttpMessageConverter {
 	private final ContentTypes contentType;

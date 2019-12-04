@@ -14,7 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 @RequiredArgsConstructor(staticName = "of")
 public class RestTemplateResultServiceClient implements ResultServiceClient {

@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 public class NamesRoleServiceMessageConverter extends MappingJackson2HttpMessageConverter {
 	public NamesRoleServiceMessageConverter() {

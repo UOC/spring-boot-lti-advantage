@@ -3,7 +3,7 @@ package edu.uoc.elc.spring.lti.security.utils;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author Xavi Aracil <xaracil@uoc.edu>
+ * @author xaracil@uoc.edu
  */
 public class TokenFactory {
 	public static String from(HttpServletRequest httpServletRequest) {
