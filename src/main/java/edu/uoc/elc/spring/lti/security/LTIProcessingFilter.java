@@ -49,7 +49,7 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 		tool.validate(token, state);
 		if (tool.isValid()) {
 			this.logger.info("Valid LTI call from " + tool.getUser().getId());
-			return tool.getUser().getId() + (tool.getContext() != null ? "-" + tool.getContext().getId() : "");
+			return token;
 		}
 		this.logger.info("The request is not a valid LTI one. Reason: " + tool.getReason());
 		return null;
