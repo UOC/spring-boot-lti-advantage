@@ -12,11 +12,18 @@ import javax.servlet.http.HttpServletRequest;
  * @author xaracil@uoc.edu
  */
 public class ToolFactory {
-	@Getter
-	private HttpSessionOIDCLaunchSession oidcLaunchSession;
+
+	HttpSessionOIDCLaunchSession oidcLaunchSession;
 
 	public Tool from(ToolDefinitionBean toolDefinitionBean, HttpServletRequest request) {
-		this.oidcLaunchSession = new HttpSessionOIDCLaunchSession(request);
+		return from(toolDefinitionBean, request, false);
+	}
+
+	public Tool from(ToolDefinitionBean toolDefinitionBean, HttpServletRequest request, boolean clearSession) {
+		oidcLaunchSession = new HttpSessionOIDCLaunchSession(request);
+		if (clearSession) {
+			oidcLaunchSession.clear();
+		}
 		final ToolDefinition toolDefinition = ToolDefinitionFactory.from(toolDefinitionBean);
 		Tool tool = new Tool(toolDefinition,
 						toolDefinitionBean.getClaimAccessor(),
