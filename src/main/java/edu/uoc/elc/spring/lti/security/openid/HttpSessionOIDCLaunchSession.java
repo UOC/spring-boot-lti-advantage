@@ -1,6 +1,7 @@
 package edu.uoc.elc.spring.lti.security.openid;
 
 import edu.uoc.lti.oidc.OIDCLaunchSession;
+import lombok.RequiredArgsConstructor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpSession;
 /**
  * @author xaracil@uoc.edu
  */
+@RequiredArgsConstructor
 public class HttpSessionOIDCLaunchSession implements OIDCLaunchSession {
 	private final static String STATE_SESSION_ATTRIBUTE_NAME = "currentLti1.3State";
 	private final static String NONCE_SESSION_ATTRIBUTE_NAME = "currentLti1.3Nonce";
@@ -15,12 +17,7 @@ public class HttpSessionOIDCLaunchSession implements OIDCLaunchSession {
 
 	private final HttpServletRequest request;
 
-	public HttpSessionOIDCLaunchSession(HttpServletRequest request) {
-		this.request = request;
-		clearSession();
-	}
-
-	private void clearSession() {
+	public void clear() {
 		final HttpSession session = this.request.getSession(false);
 		if (session != null) {
 			setState(null);
