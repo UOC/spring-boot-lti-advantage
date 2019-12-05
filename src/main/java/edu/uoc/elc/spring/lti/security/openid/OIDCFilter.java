@@ -29,6 +29,7 @@ public class OIDCFilter extends AbstractAuthenticationProcessingFilter {
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
 		ToolFactory toolFactory = new ToolFactory();
+		toolFactory.getOidcLaunchSession().clear();
 		final Tool tool = toolFactory.from(toolDefinitionBean, request);
 
 		// get data from request
