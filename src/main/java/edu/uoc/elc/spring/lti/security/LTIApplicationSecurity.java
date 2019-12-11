@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
  * @author xaracil@uoc.edu
  */
 @Configuration
-@ComponentScan(value = {"edu.uoc.elc.spring.security.lti.mvc", "edu.uoc.elc.spring.security.lti.tool"})
+@ComponentScan(value = {"edu.uoc.elc.spring.lti.security.mvc", "edu.uoc.elc.spring.lti.tool"})
 public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	@Getter
 	final ToolDefinitionBean toolDefinitionBean;
