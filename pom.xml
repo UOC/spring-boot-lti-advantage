@@ -4,7 +4,7 @@
 
 	<groupId>edu.uoc.elc.lti</groupId>
 	<artifactId>spring-boot-lti-advantage</artifactId>
-	<version>0.0.6-SNAPSHOT</version>
+	<version>0.0.6</version>
 	<packaging>jar</packaging>
 
 	<name>spring-boot-lti-advantage</name>
