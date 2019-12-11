@@ -12,7 +12,7 @@ Just add the dependency to your `pom.xml` file:
   <dependency>
 	<groupId>edu.uoc.elc.lti</groupId>
 	<artifactId>spring-boot-lti-advantage</artifactId>
-	<version>0.0.5</version>
+	<version>0.0.6</version>
   </dependency>
 ```  
 
