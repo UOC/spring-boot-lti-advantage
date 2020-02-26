@@ -1,13 +1,14 @@
 package edu.uoc.elc.spring.lti.security;
 
-import edu.uoc.elc.lti.tool.Tool;
-import lombok.Getter;
-import org.springframework.security.core.GrantedAuthority;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+
+import edu.uoc.elc.lti.tool.Tool;
+import lombok.Getter;
 
 /**
  * UserDetails from LTI context data. Includes Context information
@@ -40,7 +41,9 @@ public class User extends org.springframework.security.core.userdetails.User {
 		return tool.getUser().getName();
 	}
 
-	public String getLocale() { return tool.getLocale(); }
+	public String getLocale() {
+		return tool.getLocale();
+	}
 
 	public List<String> getRoles() {
 		return tool.getRoles();
@@ -49,7 +52,7 @@ public class User extends org.springframework.security.core.userdetails.User {
 	public URI getPhotoUrl() {
 		try {
 			return new URI(tool.getUser().getPicture());
-		} catch (URISyntaxException e) {
+		} catch (URISyntaxException | NullPointerException e) {
 			return null;
 		}
 	}
