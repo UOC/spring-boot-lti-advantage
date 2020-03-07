@@ -1,24 +1,25 @@
 package edu.uoc.elc.spring.lti.security.interceptors;
 
-import edu.uoc.elc.spring.lti.security.User;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.security.Principal;
+import java.util.Locale;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.security.Principal;
-import java.util.Locale;
+import edu.uoc.elc.spring.lti.security.User;
+import lombok.extern.apachecommons.CommonsLog;
 
 /**
- * Custom LocaleChangeInterceptor for setting the locale from LTI
- * Created by xavi on 23/9/16.
+ * Custom LocaleChangeInterceptor for setting the locale from LTI Created by
+ * xavi on 23/9/16.
  */
+@CommonsLog
 public class LTILocaleChangeInterceptor extends HandlerInterceptorAdapter {
-	protected final Log logger = LogFactory.getLog(this.getClass());
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -36,10 +37,11 @@ public class LTILocaleChangeInterceptor extends HandlerInterceptorAdapter {
 
 					final String[] languangeAndCountry = newLocale.split("-");
 					if (languangeAndCountry.length == 2) {
-						if (this.logger.isDebugEnabled()) {
-							this.logger.debug("Setting locale to " + newLocale);
+						if (log.isDebugEnabled()) {
+							log.debug("Setting locale to " + newLocale);
 						}
-						localeResolver.setLocale(request, response, new Locale(languangeAndCountry[0], languangeAndCountry[1]));
+						localeResolver.setLocale(request, response,
+								new Locale(languangeAndCountry[0], languangeAndCountry[1]));
 					}
 				}
 			}
@@ -48,5 +50,3 @@ public class LTILocaleChangeInterceptor extends HandlerInterceptorAdapter {
 		return true;
 	}
 }
-
-

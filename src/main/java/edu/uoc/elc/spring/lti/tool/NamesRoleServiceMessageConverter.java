@@ -23,7 +23,7 @@ public class NamesRoleServiceMessageConverter extends MappingJackson2HttpMessage
 	}
 
 	private void setContentType() {
-		setSupportedMediaTypes(Arrays.asList(mediaType(ContentTypes.REQUEST), mediaType(ContentTypes.RESPONSE)));
+		setSupportedMediaTypes(Arrays.asList(mediaType(ContentTypes.REQUEST), mediaType(ContentTypes.RESPONSE), MediaType.APPLICATION_JSON));
 	}
 
 	private MediaType mediaType(ContentTypes contentTypes) {

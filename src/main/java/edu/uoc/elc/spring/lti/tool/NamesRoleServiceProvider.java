@@ -1,10 +1,11 @@
 package edu.uoc.elc.spring.lti.tool;
 
-import edu.uoc.elc.lti.platform.Member;
-import edu.uoc.elc.lti.platform.NamesRoleServiceResponse;
-import edu.uoc.elc.lti.tool.NamesRoleService;
-import edu.uoc.elc.lti.tool.ResourceLink;
-import lombok.RequiredArgsConstructor;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
@@ -13,11 +14,11 @@ import org.springframework.security.oauth2.client.token.AccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import edu.uoc.elc.lti.platform.Member;
+import edu.uoc.elc.lti.platform.NamesRoleServiceResponse;
+import edu.uoc.elc.lti.tool.NamesRoleService;
+import edu.uoc.elc.lti.tool.ResourceLink;
+import lombok.RequiredArgsConstructor;
 
 /**
  * @author xaracil@uoc.edu
@@ -32,11 +33,12 @@ public class NamesRoleServiceProvider {
 
 	/**
 	 * Call to platform's Name and Role Service in order to get members
+	 * 
 	 * @return the members of the platform
 	 */
 	public List<Member> getMembers() throws URISyntaxException {
 		if (!hasNameRoleService()) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
 		final URI membershipUrl = getPlatformUri();
@@ -62,8 +64,8 @@ public class NamesRoleServiceProvider {
 
 	private List<Member> getMembersFromServer(URI uri) {
 		final OAuth2RestOperations restOperations = getTemplate();
-
-		final NamesRoleServiceResponse namesRoleServiceResponse = restOperations.getForObject(uri, NamesRoleServiceResponse.class);
+		final NamesRoleServiceResponse namesRoleServiceResponse = restOperations.getForObject(uri,
+				NamesRoleServiceResponse.class);
 		return Objects.requireNonNull(namesRoleServiceResponse).getMembers();
 	}
 
