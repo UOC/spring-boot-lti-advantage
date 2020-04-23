@@ -1,21 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.2.1.RELEASE</version>
+    <relativePath /> <!-- lookup parent from repository -->
+  </parent>
 
 	<groupId>edu.uoc.elc.lti</groupId>
 	<artifactId>spring-boot-lti-advantage</artifactId>
-	<version>0.0.6</version>
+	<version>0.0.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>spring-boot-lti-advantage</name>
+  <name>${project.groupId}:${project.artifactId}</name>
 	<description>LTI Advantage library for Spring Boot projects</description>
+  <url>https://github.com/UOC/spring-boot-lti-advantage</url>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.2.1.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
-	</parent>
+  <scm>
+    <connection>scm:git:git@github.com:UOC/spring-boot-lti-advantage.git</connection>
+    <developerConnection>scm:git:git@github.com:UOC/spring-boot-lti-advantage.git</developerConnection>
+    <url>https://github.com/UOC/spring-boot-lti-advantage</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>github-uoc</id>
+      <name>GitHub UOC Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/uoc/spring-boot-lti-advantage</url>
+    </repository>
+  </distributionManagement>
+
+  <developers>
+    <developer>
+      <name>Xavi Aracil</name>
+      <email>xaracil@uoc.edu</email>
+      <organization>Universitat Oberta de Catalunya</organization>
+      <organizationUrl>https://www.uoc.edu</organizationUrl>
+    </developer>
+  </developers>
+
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,13 +67,13 @@
 
 		<dependency>
 			<groupId>edu.uoc.elc.lti</groupId>
-			<artifactId>lti-1.3</artifactId>
+			<artifactId>lti-13</artifactId>
 			<version>0.0.2</version>
 		</dependency>
 
 		<dependency>
 			<groupId>edu.uoc.elc.lti</groupId>
-			<artifactId>lti-1.3-jwt</artifactId>
+			<artifactId>lti-13-jwt</artifactId>
 			<version>0.0.2</version>
 			<scope>test</scope>
 		</dependency>
