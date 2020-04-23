@@ -10,7 +10,7 @@
 
 	<groupId>edu.uoc.elc.lti</groupId>
 	<artifactId>spring-boot-lti-advantage</artifactId>
-	<version>0.0.7-SNAPSHOT</version>
+	<version>0.0.7</version>
 	<packaging>jar</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
@@ -21,7 +21,7 @@
     <connection>scm:git:git@github.com:UOC/spring-boot-lti-advantage.git</connection>
     <developerConnection>scm:git:git@github.com:UOC/spring-boot-lti-advantage.git</developerConnection>
     <url>https://github.com/UOC/spring-boot-lti-advantage</url>
-    <tag>HEAD</tag>
+    <tag>spring-boot-lti-advantage-0.0.7</tag>
   </scm>
 
   <distributionManagement>
