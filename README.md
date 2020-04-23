@@ -14,7 +14,7 @@ See https://github.com/UOC/java-lti-1.3-provider-example for an example.
   <dependency>
 	<groupId>edu.uoc.elc.lti</groupId>
 	<artifactId>spring-boot-lti-advantage</artifactId>
-	<version>0.0.6</version>
+	<version>0.0.7</version>
   </dependency>
 ```  
 
