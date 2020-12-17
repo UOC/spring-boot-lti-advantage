@@ -4,7 +4,9 @@ import edu.uoc.elc.lti.platform.Member;
 import edu.uoc.elc.lti.platform.NamesRoleServiceResponse;
 import edu.uoc.elc.lti.tool.NamesRoleService;
 import edu.uoc.elc.lti.tool.ResourceLink;
+import edu.uoc.lti.namesrole.ContentTypes;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
@@ -15,6 +17,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -74,6 +78,7 @@ public class NamesRoleServiceProvider {
 
 			final OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(resource, context);
 			oAuth2RestTemplate.setAccessTokenProvider(accessTokenProvider);
+			oAuth2RestTemplate.setInterceptors(Collections.singletonList(new NamesRoleServiceContentTypeInterceptor()));
 			oAuth2RestTemplate.setMessageConverters(Collections.singletonList(new NamesRoleServiceMessageConverter()));
 			template = oAuth2RestTemplate;
 		}
