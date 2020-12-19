@@ -4,7 +4,6 @@ import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.lti.tool.ToolDefinition;
 import edu.uoc.elc.spring.lti.security.openid.HttpSessionOIDCLaunchSession;
 import edu.uoc.elc.spring.lti.security.utils.TokenFactory;
-import lombok.Getter;
 
 import javax.servlet.http.HttpServletRequest;
 
