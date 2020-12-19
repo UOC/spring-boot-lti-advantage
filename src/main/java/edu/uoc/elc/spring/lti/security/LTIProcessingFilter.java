@@ -1,14 +1,19 @@
 package edu.uoc.elc.spring.lti.security;
 
 import edu.uoc.elc.lti.tool.Tool;
+import edu.uoc.elc.spring.lti.security.openid.HttpSessionOIDCLaunchSession;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
 import edu.uoc.elc.spring.lti.tool.ToolFactory;
 import edu.uoc.elc.spring.lti.security.utils.TokenFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * LTI Pre Auth filter. Tries to perform a preauth using LTI validation
@@ -18,9 +23,13 @@ import javax.servlet.http.HttpServletRequest;
 public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
 	private final ToolDefinitionBean toolDefinitionBean;
+	private final boolean invalidateSession;
 
 	public LTIProcessingFilter(ToolDefinitionBean toolDefinitionBean) {
 		super();
+		this.setRequiresAuthenticationRequestMatcher(new LTIProcessingFilter.LTIPreAuthenticatedProcesssingRequestMatcher());
+		this.setInvalidateSessionOnPrincipalChange(false); // set to false because we'll remove OIDC attributes stored in session otherwise
+		this.invalidateSession = true;
 		this.toolDefinitionBean = toolDefinitionBean;
 		setAuthenticationDetailsSource(new LTIAuthenticationDetailsSource(toolDefinitionBean));
 	}
@@ -73,5 +82,40 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 		}
 
 		return "{ N.A. }";
+	}
+
+	private class LTIPreAuthenticatedProcesssingRequestMatcher implements RequestMatcher {
+		public LTIPreAuthenticatedProcesssingRequestMatcher() {
+		}
+
+		public boolean matches(HttpServletRequest request) {
+			Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
+			if (currentUser == null) {
+				return true;
+			} else if (!LTIProcessingFilter.this.principalChanged(request, currentUser)) {
+				return false;
+			} else {
+				LTIProcessingFilter.this.logger.debug("Pre-authenticated principal has changed and will be reauthenticated");
+
+
+				if (LTIProcessingFilter.this.invalidateSession) {
+					SecurityContextHolder.clearContext();
+					HttpSession session = request.getSession(false);
+					if (session != null) {
+						LTIProcessingFilter.this.logger.debug("Invalidating existing session");
+						final List<String> keysToSave = HttpSessionOIDCLaunchSession.KEYS;
+						final Enumeration<String> attributeNames = session.getAttributeNames();
+						while (attributeNames.hasMoreElements()) {
+							final String name = attributeNames.nextElement();
+							if (!keysToSave.contains(name)) {
+								session.removeAttribute(name);
+							}
+						}
+					}
+				}
+
+				return true;
+			}
+		}
 	}
 }
