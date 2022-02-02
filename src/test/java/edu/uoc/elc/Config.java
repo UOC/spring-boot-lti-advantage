@@ -9,6 +9,8 @@ import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
 import edu.uoc.lti.jwt.claims.JWSClaimAccessor;
 import edu.uoc.lti.jwt.client.JWSClientCredentialsTokenBuilder;
 import edu.uoc.lti.jwt.deeplink.JWSTokenBuilder;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -27,6 +29,10 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("application.properties")
 @TestConfiguration
 public class Config {
+
+	@Value("${lineItemsUri}")
+	private String lineItemsUri;
+
 	@Bean
 	public ClaimAccessor claimAccessor(BasicToolDefinition basicToolDefinition) {
 		return new JWSClaimAccessor(basicToolDefinition.getKeySetUrl());
@@ -45,5 +51,10 @@ public class Config {
 	@Bean
 	public AccessTokenRequestBuilder accessTokenRequestBuilder() {
 		return new JSONAccessTokenRequestBuilderImpl();
+	}
+
+	@Bean
+	public String lineItemsUri() {
+		return this.lineItemsUri;
 	}
 }

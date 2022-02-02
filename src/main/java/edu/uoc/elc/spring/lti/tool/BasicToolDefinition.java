@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 /**
  * @author xaracil@uoc.edu
@@ -26,7 +27,7 @@ public class BasicToolDefinition {
 	@NotEmpty
 	private String platform;
 	@NotEmpty
-	private String deploymentId;
+	private List<String> deploymentIds;
 	@NotEmpty
 	private String accessTokenUrl;
 	@NotEmpty

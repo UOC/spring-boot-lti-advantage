@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author xaracil@uoc.edu
  */
@@ -39,8 +41,8 @@ public class ToolDefinitionBean {
 		return basicToolDefinition.getPlatform();
 	}
 
-	public String getDeploymentId() {
-		return basicToolDefinition.getDeploymentId();
+	public List<String> getDeploymentIds() {
+		return basicToolDefinition.getDeploymentIds();
 	}
 
 	public String getAccessTokenUrl() {

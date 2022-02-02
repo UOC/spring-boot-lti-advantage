@@ -11,7 +11,7 @@ public class ToolDefinitionFactory {
 						.clientId(toolDefinitionBean.getClientId())
 						.name(toolDefinitionBean.getName())
 						.platform(toolDefinitionBean.getPlatform())
-						.deploymentId(toolDefinitionBean.getDeploymentId())
+						.deploymentIds(toolDefinitionBean.getDeploymentIds())
 						.keySetUrl(toolDefinitionBean.getKeySetUrl())
 						.accessTokenUrl(toolDefinitionBean.getAccessTokenUrl())
 						.oidcAuthUrl(toolDefinitionBean.getOidcAuthUrl())
