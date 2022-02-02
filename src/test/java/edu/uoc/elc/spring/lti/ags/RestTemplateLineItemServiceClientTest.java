@@ -39,6 +39,9 @@ public class RestTemplateLineItemServiceClientTest {
 	@Autowired
 	private ClaimAccessor claimAccessor;
 
+	@Autowired
+	private String lineItemsUri;
+
 	// subject under test
 	private RestTemplateLineItemServiceClient sut;
 
@@ -62,7 +65,7 @@ public class RestTemplateLineItemServiceClientTest {
 		RestTemplateFactory restTemplateFactory = new TestRestTemplateFactory();
 		RestTemplateLineItemServiceClientFactory factory = new RestTemplateLineItemServiceClientFactory(restTemplateFactory);
 		this.sut = factory.of(ltiAccessTokenProvider);
-		this.sut.setServiceUri(new URI("https://lti-ri.imsglobal.org/platforms/68/contexts/88/line_items"));
+		this.sut.setServiceUri(new URI(lineItemsUri));
 		Assert.assertNotNull(sut);
 	}
 

@@ -42,6 +42,9 @@ public class RestTemplateScoreServiceClientTest {
 	@Autowired
 	private ClaimAccessor claimAccessor;
 
+	@Autowired
+	private String lineItemsUri;
+
 	private RestTemplateLineItemServiceClient lineItemServiceClient;
 	private LineItem lineItem;
 
@@ -68,7 +71,7 @@ public class RestTemplateScoreServiceClientTest {
 		RestTemplateFactory restTemplateFactory = new TestRestTemplateFactory();
 		RestTemplateLineItemServiceClientFactory lineItemServiceClientFactory = new RestTemplateLineItemServiceClientFactory(restTemplateFactory);
 		this.lineItemServiceClient = lineItemServiceClientFactory.of(ltiAccessTokenProvider);
-		this.lineItemServiceClient.setServiceUri(new URI("https://lti-ri.imsglobal.org/platforms/68/contexts/88/line_items"));
+		this.lineItemServiceClient.setServiceUri(new URI(lineItemsUri));
 
 		RestTemplateScoreServiceClientFactory factory = new RestTemplateScoreServiceClientFactory(restTemplateFactory);
 		this.sut = factory.of(ltiAccessTokenProvider);
