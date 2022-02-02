@@ -15,11 +15,13 @@ import java.util.List;
 public class HttpSessionOIDCLaunchSession implements OIDCLaunchSession {
 	private final static String STATE_SESSION_ATTRIBUTE_NAME = "currentLti1.3State";
 	private final static String NONCE_SESSION_ATTRIBUTE_NAME = "currentLti1.3Nonce";
-	private final static String TARGETLINK_URI_SESSION_ATTRIBUTE_NAME = "currentLti1.3TargetLinkUri";
+	private final static String TARGET_LINK_URI_SESSION_ATTRIBUTE_NAME = "currentLti1.3TargetLinkUri";
+	private final static String CLIENT_ID_SESSION_ATTRIBUTE_NAME = "currentLti1.3ClientId";
+	private final static String DEPLOYMENT_ID_SESSION_ATTRIBUTE_NAME = "currentLti1.3DeploymentId";
 
 	private final HttpServletRequest request;
 
-	public final static List<String> KEYS = Arrays.asList(STATE_SESSION_ATTRIBUTE_NAME, NONCE_SESSION_ATTRIBUTE_NAME, TARGETLINK_URI_SESSION_ATTRIBUTE_NAME);
+	public final static List<String> KEYS = Arrays.asList(STATE_SESSION_ATTRIBUTE_NAME, NONCE_SESSION_ATTRIBUTE_NAME, TARGET_LINK_URI_SESSION_ATTRIBUTE_NAME, CLIENT_ID_SESSION_ATTRIBUTE_NAME, DEPLOYMENT_ID_SESSION_ATTRIBUTE_NAME);
 
 	public void clear() {
 		final HttpSession session = this.request.getSession(false);
@@ -42,7 +44,17 @@ public class HttpSessionOIDCLaunchSession implements OIDCLaunchSession {
 
 	@Override
 	public void setTargetLinkUri(String s) {
-		setAttribute(TARGETLINK_URI_SESSION_ATTRIBUTE_NAME, s);
+		setAttribute(TARGET_LINK_URI_SESSION_ATTRIBUTE_NAME, s);
+	}
+
+	@Override
+	public void setClientId(String s) {
+		setAttribute(CLIENT_ID_SESSION_ATTRIBUTE_NAME, s);
+	}
+
+	@Override
+	public void setDeploymentId(String s) {
+		setAttribute(DEPLOYMENT_ID_SESSION_ATTRIBUTE_NAME, s);
 	}
 
 	private void setAttribute(String name, String value) {
@@ -65,7 +77,17 @@ public class HttpSessionOIDCLaunchSession implements OIDCLaunchSession {
 
 	@Override
 	public String getTargetLinkUri() {
-		return getAttribute(TARGETLINK_URI_SESSION_ATTRIBUTE_NAME);
+		return getAttribute(TARGET_LINK_URI_SESSION_ATTRIBUTE_NAME);
+	}
+
+	@Override
+	public String getClientId() {
+		return getAttribute(CLIENT_ID_SESSION_ATTRIBUTE_NAME);
+	}
+
+	@Override
+	public String getDeploymentId() {
+		return getAttribute(DEPLOYMENT_ID_SESSION_ATTRIBUTE_NAME);
 	}
 
 	private String getAttribute(String name) {
