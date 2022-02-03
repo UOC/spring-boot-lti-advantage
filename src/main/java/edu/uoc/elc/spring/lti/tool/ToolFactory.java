@@ -43,9 +43,9 @@ public class ToolFactory {
 	private Tool getTool(RegistrationService registrationService, ToolDefinitionBean toolDefinitionBean, HttpServletRequest request) {
 		final Registration registration = registrationService.getRegistration(oidcLaunchSession.getRegistrationId());
 		Tool tool = new Tool(registration,
-						toolDefinitionBean.getClaimAccessor(),
+						toolDefinitionBean.getClaimAccessor().getClaimAccessor(registration),
 						oidcLaunchSession,
-						toolDefinitionBean.getBuilders());
+						toolDefinitionBean.getBuilders(registration));
 
 		String token = TokenFactory.from(request);
 		String state = request.getParameter("state");

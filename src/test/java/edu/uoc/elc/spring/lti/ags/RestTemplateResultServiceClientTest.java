@@ -6,8 +6,9 @@ import edu.uoc.elc.lti.tool.ResourceLink;
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.lti.tool.oidc.InMemoryOIDCLaunchSession;
 import edu.uoc.elc.spring.lti.security.LTIAccessTokenProvider;
-import edu.uoc.elc.spring.lti.tool.registration.RegistrationService;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
+import edu.uoc.elc.spring.lti.tool.builders.ClaimAccessorService;
+import edu.uoc.elc.spring.lti.tool.registration.RegistrationService;
 import edu.uoc.lti.ags.LineItem;
 import edu.uoc.lti.ags.Result;
 import edu.uoc.lti.claims.ClaimAccessor;
@@ -42,7 +43,7 @@ public class RestTemplateResultServiceClientTest {
 	private RegistrationService registrationService;
 
 	@Autowired
-	private ClaimAccessor claimAccessor;
+	private ClaimAccessorService claimAccessorService;
 
 	@Autowired
 	private String lineItemsUri;
@@ -59,9 +60,9 @@ public class RestTemplateResultServiceClientTest {
 		OIDCLaunchSession launchSession = new InMemoryOIDCLaunchSession();
 		final Registration registration =  registrationService.getRegistration("id");
 		final Tool tool = new Tool(registration,
-						claimAccessor,
+						claimAccessorService.getClaimAccessor(registration),
 						launchSession,
-						toolDefinitionBean.getBuilders());
+						toolDefinitionBean.getBuilders(registration));
 		Assert.assertNotNull(tool);
 
 		// spy tool

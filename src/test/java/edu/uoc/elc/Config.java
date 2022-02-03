@@ -1,12 +1,11 @@
 package edu.uoc.elc;
 
 import edu.uoc.elc.lti.tool.Key;
-import edu.uoc.elc.spring.lti.tool.registration.RegistrationService;
+import edu.uoc.elc.spring.lti.tool.builders.ClaimAccessorService;
+import edu.uoc.elc.spring.lti.tool.builders.ClientCredentialsTokenBuilderService;
+import edu.uoc.elc.spring.lti.tool.builders.DeepLinkingTokenBuilderService;
 import edu.uoc.lti.accesstoken.AccessTokenRequestBuilder;
 import edu.uoc.lti.accesstoken.JSONAccessTokenRequestBuilderImpl;
-import edu.uoc.lti.claims.ClaimAccessor;
-import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
-import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
 import edu.uoc.lti.jwt.claims.JWSClaimAccessor;
 import edu.uoc.lti.jwt.client.JWSClientCredentialsTokenBuilder;
 import edu.uoc.lti.jwt.deeplink.JWSTokenBuilder;
@@ -34,20 +33,24 @@ public class Config {
 	private String lineItemsUri;
 
 	@Bean
-	public ClaimAccessor claimAccessor(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") RegistrationService registrationService) {
-		return new JWSClaimAccessor(registrationService.getRegistration(null).getKeySetUrl());
+	public ClaimAccessorService claimAccessorService() {
+		return registration -> new JWSClaimAccessor(registration.getKeySetUrl());
 	}
 
 	@Bean
-	public DeepLinkingTokenBuilder deepLinkingTokenBuilder(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") RegistrationService registrationService) {
-		final Key key = registrationService.getRegistration(null).getKeySet().getKeys().get(0);
-		return new JWSTokenBuilder(key.getPublicKey(), key.getPrivateKey(), key.getAlgorithm());
+	public DeepLinkingTokenBuilderService deepLinkingTokenBuilderService() {
+		return registration -> {
+			final Key key = registration.getKeySet().getKeys().get(0);
+			return new JWSTokenBuilder(key.getPublicKey(), key.getPrivateKey(), key.getAlgorithm());
+		};
 	}
 
 	@Bean
-	public ClientCredentialsTokenBuilder clientCredentialsTokenBuilder(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") RegistrationService registrationService) {
-		final Key key = registrationService.getRegistration(null).getKeySet().getKeys().get(0);
-		return new JWSClientCredentialsTokenBuilder(key.getPublicKey(), key.getPrivateKey(), key.getAlgorithm());
+	public ClientCredentialsTokenBuilderService clientCredentialsTokenBuilderService() {
+		return registration -> {
+			final Key key = registration.getKeySet().getKeys().get(0);
+			return new JWSClientCredentialsTokenBuilder(key.getPublicKey(), key.getPrivateKey(), key.getAlgorithm());
+		};
 	}
 
 	@Bean
