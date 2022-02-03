@@ -10,7 +10,6 @@ import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
 import edu.uoc.elc.spring.lti.tool.builders.ClaimAccessorService;
 import edu.uoc.elc.spring.lti.tool.registration.RegistrationService;
 import edu.uoc.lti.ags.LineItem;
-import edu.uoc.lti.claims.ClaimAccessor;
 import edu.uoc.lti.oidc.OIDCLaunchSession;
 import org.junit.After;
 import org.junit.Assert;
@@ -58,7 +57,7 @@ public class RestTemplateLineItemServiceClientTest {
 		final Tool tool = new Tool(registration,
 						claimAccessorService.getClaimAccessor(registration),
 						launchSession,
-						toolDefinitionBean.getBuilders(registration));
+						toolDefinitionBean.getBuilders(registration, "id"));
 		Assert.assertNotNull(tool);
 
 		// spy tool

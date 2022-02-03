@@ -8,5 +8,5 @@ import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
  * Made for the project spring-boot-lti-advantage
  */
 public interface DeepLinkingTokenBuilderService {
-	DeepLinkingTokenBuilder getDeepLinkingTokenBuilder(Registration registration);
+	DeepLinkingTokenBuilder getDeepLinkingTokenBuilder(Registration registration, String kid);
 }

@@ -1,11 +1,13 @@
 package edu.uoc.elc;
 
 import edu.uoc.elc.lti.tool.Key;
+import edu.uoc.elc.lti.tool.Registration;
 import edu.uoc.elc.spring.lti.tool.builders.ClaimAccessorService;
 import edu.uoc.elc.spring.lti.tool.builders.ClientCredentialsTokenBuilderService;
 import edu.uoc.elc.spring.lti.tool.builders.DeepLinkingTokenBuilderService;
 import edu.uoc.lti.accesstoken.AccessTokenRequestBuilder;
 import edu.uoc.lti.accesstoken.JSONAccessTokenRequestBuilderImpl;
+import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
 import edu.uoc.lti.jwt.claims.JWSClaimAccessor;
 import edu.uoc.lti.jwt.client.JWSClientCredentialsTokenBuilder;
 import edu.uoc.lti.jwt.deeplink.JWSTokenBuilder;
@@ -39,7 +41,7 @@ public class Config {
 
 	@Bean
 	public DeepLinkingTokenBuilderService deepLinkingTokenBuilderService() {
-		return registration -> {
+		return (registration, kid) -> {
 			final Key key = registration.getKeySet().getKeys().get(0);
 			return new JWSTokenBuilder(key.getPublicKey(), key.getPrivateKey(), key.getAlgorithm());
 		};
@@ -47,7 +49,7 @@ public class Config {
 
 	@Bean
 	public ClientCredentialsTokenBuilderService clientCredentialsTokenBuilderService() {
-		return registration -> {
+		return (registration, kid) -> {
 			final Key key = registration.getKeySet().getKeys().get(0);
 			return new JWSClientCredentialsTokenBuilder(key.getPublicKey(), key.getPrivateKey(), key.getAlgorithm());
 		};

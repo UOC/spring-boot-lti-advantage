@@ -23,9 +23,9 @@ public class ToolDefinitionBean {
 	private final ClientCredentialsTokenBuilderService clientCredentialsTokenBuilder;
 	private final AccessTokenRequestBuilder accessTokenRequestBuilder;
 
-	public ToolBuilders getBuilders(Registration registration) {
-		return new ToolBuilders(clientCredentialsTokenBuilder.getClientCredentialsTokenBuilder(registration),
+	public ToolBuilders getBuilders(Registration registration, String kid) {
+		return new ToolBuilders(clientCredentialsTokenBuilder.getClientCredentialsTokenBuilder(registration, kid),
 						accessTokenRequestBuilder,
-						deepLinkingTokenBuilder.getDeepLinkingTokenBuilder(registration));
+						deepLinkingTokenBuilder.getDeepLinkingTokenBuilder(registration, kid));
 	}
 }

@@ -8,5 +8,5 @@ import edu.uoc.lti.clientcredentials.ClientCredentialsTokenBuilder;
  * Made for the project spring-boot-lti-advantage
  */
 public interface ClientCredentialsTokenBuilderService {
-	ClientCredentialsTokenBuilder getClientCredentialsTokenBuilder(Registration registration);
+	ClientCredentialsTokenBuilder getClientCredentialsTokenBuilder(Registration registration, String kid);
 }
