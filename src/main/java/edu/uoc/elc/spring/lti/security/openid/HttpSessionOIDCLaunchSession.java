@@ -30,6 +30,9 @@ public class HttpSessionOIDCLaunchSession implements OIDCLaunchSession {
 			setState(null);
 			setTargetLinkUri(null);
 			setNonce(null);
+			setClientId(null);
+			setRegistrationId(null);
+			setDeploymentId(null);
 		}
 	}
 
