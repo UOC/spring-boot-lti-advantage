@@ -5,6 +5,7 @@ import edu.uoc.elc.lti.tool.oidc.LoginRequest;
 import edu.uoc.elc.spring.lti.tool.registration.RegistrationService;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
 import edu.uoc.elc.spring.lti.tool.ToolFactory;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -22,17 +23,21 @@ import java.net.URISyntaxException;
 public class OIDCFilter extends AbstractAuthenticationProcessingFilter {
 	private final RegistrationService registrationService;
 	private final ToolDefinitionBean toolDefinitionBean;
+	private final String filterUrl;
 
-	public OIDCFilter(String defaultFilterProcessesUrl, RegistrationService registrationService, ToolDefinitionBean toolDefinitionBean) {
+	public OIDCFilter(String defaultFilterProcessesUrl, String filterUrl, RegistrationService registrationService, ToolDefinitionBean toolDefinitionBean) {
 		super(defaultFilterProcessesUrl);
+		this.filterUrl = filterUrl;
 		this.registrationService = registrationService;
 		this.toolDefinitionBean = toolDefinitionBean;
 	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+		final String registrationId = getRegistrationId(request);
+
 		ToolFactory toolFactory = new ToolFactory();
-		final Tool tool = toolFactory.from(registrationService, toolDefinitionBean, request, true);
+		final Tool tool = toolFactory.from(registrationService, toolDefinitionBean, registrationId, request, true);
 
 		// get data from request
 		final LoginRequest loginRequest = LoginRequestFactory.from(request);
@@ -59,5 +64,13 @@ public class OIDCFilter extends AbstractAuthenticationProcessingFilter {
 		}
 
 		return null;
+	}
+
+	@NotNull
+	private String getRegistrationId(HttpServletRequest request) {
+		// get registration id from path (it's the last path of the path)
+		final String requestURI = request.getRequestURI();
+		final String lastPath = requestURI.replaceAll("^" + filterUrl, "");
+		return lastPath.replaceAll("^/", "");
 	}
 }

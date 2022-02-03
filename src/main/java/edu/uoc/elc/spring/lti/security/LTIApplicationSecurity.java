@@ -36,7 +36,8 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 		return preAuthFilter;
 	}
 
-	private final static String OIDC_LAUNCH_URL = "/oidclaunch";
+	private final static String OIDC_LAUNCH_URL = "/oidclaunch{slash:/*}{registrationId}";
+	private final static String OIDC_LAUNCH_PREFIX = "/oidclaunch";
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -57,6 +58,6 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	}
 
 	private OIDCFilter oidcFilter() {
-		return new OIDCFilter(OIDC_LAUNCH_URL, registrationService, toolDefinitionBean);
+		return new OIDCFilter(OIDC_LAUNCH_URL, OIDC_LAUNCH_PREFIX, registrationService, toolDefinitionBean);
 	}
 }
