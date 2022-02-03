@@ -1,13 +1,13 @@
 package edu.uoc.elc.spring.lti.ags;
 
 import edu.uoc.elc.Config;
+import edu.uoc.elc.lti.tool.Registration;
 import edu.uoc.elc.lti.tool.ResourceLink;
 import edu.uoc.elc.lti.tool.Tool;
-import edu.uoc.elc.lti.tool.ToolDefinition;
 import edu.uoc.elc.lti.tool.oidc.InMemoryOIDCLaunchSession;
 import edu.uoc.elc.spring.lti.security.LTIAccessTokenProvider;
+import edu.uoc.elc.spring.lti.tool.RegistrationService;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
-import edu.uoc.elc.spring.lti.tool.ToolDefinitionFactory;
 import edu.uoc.lti.ags.LineItem;
 import edu.uoc.lti.claims.ClaimAccessor;
 import edu.uoc.lti.oidc.OIDCLaunchSession;
@@ -37,6 +37,10 @@ public class RestTemplateLineItemServiceClientTest {
 	private ToolDefinitionBean toolDefinitionBean;
 
 	@Autowired
+	@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+	private RegistrationService registrationService;
+
+	@Autowired
 	private ClaimAccessor claimAccessor;
 
 	@Autowired
@@ -49,8 +53,8 @@ public class RestTemplateLineItemServiceClientTest {
 	public void setUp() throws URISyntaxException {
 		Assert.assertNotNull(toolDefinitionBean);
 		OIDCLaunchSession launchSession = new InMemoryOIDCLaunchSession();
-		final ToolDefinition toolDefinition = ToolDefinitionFactory.from(toolDefinitionBean);
-		final Tool tool = new Tool(toolDefinition,
+		final Registration registration =  registrationService.getRegistration("id");
+		final Tool tool = new Tool(registration,
 						claimAccessor,
 						launchSession,
 						toolDefinitionBean.getBuilders());

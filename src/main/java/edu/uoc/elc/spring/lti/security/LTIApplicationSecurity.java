@@ -1,6 +1,7 @@
 package edu.uoc.elc.spring.lti.security;
 
 import edu.uoc.elc.spring.lti.security.openid.OIDCFilter;
+import edu.uoc.elc.spring.lti.tool.RegistrationService;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +19,17 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 @ComponentScan(value = {"edu.uoc.elc.spring.lti.security.mvc", "edu.uoc.elc.spring.lti.tool"})
 public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	@Getter
+	final RegistrationService registrationService;
 	final ToolDefinitionBean toolDefinitionBean;
 
-	public LTIApplicationSecurity(ToolDefinitionBean toolDefinitionBean) {
+	public LTIApplicationSecurity(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") RegistrationService registrationService,
+																ToolDefinitionBean toolDefinitionBean) {
+		this.registrationService = registrationService;
 		this.toolDefinitionBean = toolDefinitionBean;
 	}
 
 	protected LTIProcessingFilter getPreAuthFilter() throws Exception {
-		LTIProcessingFilter preAuthFilter = new LTIProcessingFilter(toolDefinitionBean);
+		LTIProcessingFilter preAuthFilter = new LTIProcessingFilter(registrationService, toolDefinitionBean);
 
 		preAuthFilter.setCheckForPrincipalChanges(true);
 		preAuthFilter.setAuthenticationManager(authenticationManager());
@@ -45,7 +49,7 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	}
 
 	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) {
+	public void configureGlobal(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") AuthenticationManagerBuilder auth) {
 		PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
 		authenticationProvider.setPreAuthenticatedUserDetailsService(new LTIAuthenticationUserDetailsService<>());
 
@@ -53,6 +57,6 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	}
 
 	private OIDCFilter oidcFilter() {
-		return new OIDCFilter(OIDC_LAUNCH_URL, toolDefinitionBean);
+		return new OIDCFilter(OIDC_LAUNCH_URL, registrationService, toolDefinitionBean);
 	}
 }

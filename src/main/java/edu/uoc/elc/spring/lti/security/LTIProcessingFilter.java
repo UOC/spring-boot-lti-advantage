@@ -2,9 +2,10 @@ package edu.uoc.elc.spring.lti.security;
 
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.spring.lti.security.openid.HttpSessionOIDCLaunchSession;
+import edu.uoc.elc.spring.lti.security.utils.TokenFactory;
+import edu.uoc.elc.spring.lti.tool.RegistrationService;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
 import edu.uoc.elc.spring.lti.tool.ToolFactory;
-import edu.uoc.elc.spring.lti.security.utils.TokenFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
@@ -22,21 +23,23 @@ import java.util.List;
  */
 public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
+	private final RegistrationService registrationService;
 	private final ToolDefinitionBean toolDefinitionBean;
 	private final boolean invalidateSession;
 
-	public LTIProcessingFilter(ToolDefinitionBean toolDefinitionBean) {
+	public LTIProcessingFilter(RegistrationService registrationService, ToolDefinitionBean toolDefinitionBean) {
 		super();
 		this.setRequiresAuthenticationRequestMatcher(new LTIProcessingFilter.LTIPreAuthenticatedProcesssingRequestMatcher());
 		this.setInvalidateSessionOnPrincipalChange(false); // set to false because we'll remove OIDC attributes stored in session otherwise
 		this.invalidateSession = true;
+		this.registrationService = registrationService;
 		this.toolDefinitionBean = toolDefinitionBean;
-		setAuthenticationDetailsSource(new LTIAuthenticationDetailsSource(toolDefinitionBean));
+		setAuthenticationDetailsSource(new LTIAuthenticationDetailsSource(registrationService, toolDefinitionBean));
 	}
 
 	private Tool getTool(HttpServletRequest httpServletRequest) {
 		ToolFactory toolFactory = new ToolFactory();
-		return toolFactory.from(toolDefinitionBean, httpServletRequest);
+		return toolFactory.from(registrationService, toolDefinitionBean, httpServletRequest);
 	}
 
 	@Override

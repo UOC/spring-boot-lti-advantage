@@ -18,6 +18,7 @@ public class HttpSessionOIDCLaunchSession implements OIDCLaunchSession {
 	private final static String TARGET_LINK_URI_SESSION_ATTRIBUTE_NAME = "currentLti1.3TargetLinkUri";
 	private final static String CLIENT_ID_SESSION_ATTRIBUTE_NAME = "currentLti1.3ClientId";
 	private final static String DEPLOYMENT_ID_SESSION_ATTRIBUTE_NAME = "currentLti1.3DeploymentId";
+	private final static String REGISTRATION_ID_SESSION_ATTRIBUTE_NAME = "currentLti1.3RegistrationId";
 
 	private final HttpServletRequest request;
 
@@ -88,6 +89,14 @@ public class HttpSessionOIDCLaunchSession implements OIDCLaunchSession {
 	@Override
 	public String getDeploymentId() {
 		return getAttribute(DEPLOYMENT_ID_SESSION_ATTRIBUTE_NAME);
+	}
+
+	public void setRegistrationId(String s) {
+		setAttribute(REGISTRATION_ID_SESSION_ATTRIBUTE_NAME, s);
+	}
+
+	public String getRegistrationId() {
+		return getAttribute(REGISTRATION_ID_SESSION_ATTRIBUTE_NAME);
 	}
 
 	private String getAttribute(String name) {

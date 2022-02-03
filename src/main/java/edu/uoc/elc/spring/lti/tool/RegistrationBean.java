@@ -15,9 +15,10 @@ import java.util.List;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "lti")
 @Validated
-public class BasicToolDefinition {
+public class RegistrationBean {
+	@NotEmpty
+	private String id;
 	@NotEmpty
 	private String name;
 	@NotEmpty
@@ -25,16 +26,13 @@ public class BasicToolDefinition {
 	@NotEmpty
 	private String keySetUrl;
 	@NotEmpty
-	private String platform;
-	@NotEmpty
-	private List<String> deploymentIds;
-	@NotEmpty
 	private String accessTokenUrl;
 	@NotEmpty
+	private String platform;
+	@NotEmpty
+	private List<DeploymentBean> deployments;
+	@NotEmpty
+	private KeySetBean keySet;
+	@NotEmpty
 	private String oidcAuthUrl;
-	@NotEmpty
-	private String privateKey;
-	@NotEmpty
-	private String publicKey;
-
 }

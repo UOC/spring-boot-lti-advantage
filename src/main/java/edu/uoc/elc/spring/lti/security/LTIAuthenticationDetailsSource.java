@@ -1,9 +1,10 @@
 package edu.uoc.elc.spring.lti.security;
 
 import edu.uoc.elc.lti.tool.Tool;
+import edu.uoc.elc.spring.lti.security.utils.TokenFactory;
+import edu.uoc.elc.spring.lti.tool.RegistrationService;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
 import edu.uoc.elc.spring.lti.tool.ToolFactory;
-import edu.uoc.elc.spring.lti.security.utils.TokenFactory;
 import lombok.Getter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,23 +28,25 @@ public class LTIAuthenticationDetailsSource implements AuthenticationDetailsSour
 
 	private final Attributes2GrantedAuthoritiesMapper ltiUserRoles2GrantedAuthoritiesMapper = new SimpleAttributes2GrantedAuthoritiesMapper();
 
+	private final RegistrationService registrationService;
 	private final ToolDefinitionBean toolDefinitionBean;
 
 	@Getter
 	private Tool tool;
 
 	public LTIAuthenticationDetailsSource() {
-		this(null);
+		this(null, null);
 	}
 
-	public LTIAuthenticationDetailsSource(ToolDefinitionBean toolDefinitionBean) {
+	public LTIAuthenticationDetailsSource(RegistrationService registrationService, ToolDefinitionBean toolDefinitionBean) {
+		this.registrationService = registrationService;
 		this.toolDefinitionBean = toolDefinitionBean;
 	}
 
 	protected Collection<String> getUserRoles(HttpServletRequest request) {
 		ArrayList<String> ltiUserRolesList = new ArrayList<>();
 		ToolFactory toolFactory = new ToolFactory();
-		this.tool = toolFactory.from(toolDefinitionBean, request);
+		this.tool = toolFactory.from(registrationService, toolDefinitionBean, request);
 
 		String token = TokenFactory.from(request);
 		String state = request.getParameter("state");

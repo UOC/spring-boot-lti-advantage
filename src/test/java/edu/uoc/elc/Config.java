@@ -1,6 +1,8 @@
 package edu.uoc.elc;
 
-import edu.uoc.elc.spring.lti.tool.BasicToolDefinition;
+import edu.uoc.elc.lti.tool.Key;
+import edu.uoc.elc.lti.tool.Registration;
+import edu.uoc.elc.spring.lti.tool.RegistrationService;
 import edu.uoc.lti.accesstoken.AccessTokenRequestBuilder;
 import edu.uoc.lti.accesstoken.JSONAccessTokenRequestBuilderImpl;
 import edu.uoc.lti.claims.ClaimAccessor;
@@ -9,7 +11,8 @@ import edu.uoc.lti.deeplink.DeepLinkingTokenBuilder;
 import edu.uoc.lti.jwt.claims.JWSClaimAccessor;
 import edu.uoc.lti.jwt.client.JWSClientCredentialsTokenBuilder;
 import edu.uoc.lti.jwt.deeplink.JWSTokenBuilder;
-import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -34,18 +37,20 @@ public class Config {
 	private String lineItemsUri;
 
 	@Bean
-	public ClaimAccessor claimAccessor(BasicToolDefinition basicToolDefinition) {
-		return new JWSClaimAccessor(basicToolDefinition.getKeySetUrl());
+	public ClaimAccessor claimAccessor(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") RegistrationService registrationService) {
+		return new JWSClaimAccessor(registrationService.getRegistration(null).getKeySetUrl());
 	}
 
 	@Bean
-	public DeepLinkingTokenBuilder deepLinkingTokenBuilder(BasicToolDefinition basicToolDefinition) {
-		return new JWSTokenBuilder(basicToolDefinition.getPublicKey(), basicToolDefinition.getPrivateKey());
+	public DeepLinkingTokenBuilder deepLinkingTokenBuilder(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") RegistrationService registrationService) {
+		final Key key = registrationService.getRegistration(null).getKeySet().getKeys().get(0);
+		return new JWSTokenBuilder(key.getPublicKey(), key.getPrivateKey(), key.getAlgorithm());
 	}
 
 	@Bean
-	public ClientCredentialsTokenBuilder clientCredentialsTokenBuilder(BasicToolDefinition basicToolDefinition) {
-		return new JWSClientCredentialsTokenBuilder(basicToolDefinition.getPublicKey(), basicToolDefinition.getPrivateKey());
+	public ClientCredentialsTokenBuilder clientCredentialsTokenBuilder(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") RegistrationService registrationService) {
+		final Key key = registrationService.getRegistration(null).getKeySet().getKeys().get(0);
+		return new JWSClientCredentialsTokenBuilder(key.getPublicKey(), key.getPrivateKey(), key.getAlgorithm());
 	}
 
 	@Bean

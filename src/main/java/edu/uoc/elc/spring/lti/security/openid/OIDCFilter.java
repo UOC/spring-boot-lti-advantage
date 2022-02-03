@@ -2,6 +2,7 @@ package edu.uoc.elc.spring.lti.security.openid;
 
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.lti.tool.oidc.LoginRequest;
+import edu.uoc.elc.spring.lti.tool.RegistrationService;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
 import edu.uoc.elc.spring.lti.tool.ToolFactory;
 import org.springframework.security.core.Authentication;
@@ -19,17 +20,19 @@ import java.net.URISyntaxException;
  * @author xaracil@uoc.edu
  */
 public class OIDCFilter extends AbstractAuthenticationProcessingFilter {
+	private final RegistrationService registrationService;
 	private final ToolDefinitionBean toolDefinitionBean;
 
-	public OIDCFilter(String defaultFilterProcessesUrl, ToolDefinitionBean toolDefinitionBean) {
+	public OIDCFilter(String defaultFilterProcessesUrl, RegistrationService registrationService, ToolDefinitionBean toolDefinitionBean) {
 		super(defaultFilterProcessesUrl);
+		this.registrationService = registrationService;
 		this.toolDefinitionBean = toolDefinitionBean;
 	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
 		ToolFactory toolFactory = new ToolFactory();
-		final Tool tool = toolFactory.from(toolDefinitionBean, request, true);
+		final Tool tool = toolFactory.from(registrationService, toolDefinitionBean, request, true);
 
 		// get data from request
 		final LoginRequest loginRequest = LoginRequestFactory.from(request);
