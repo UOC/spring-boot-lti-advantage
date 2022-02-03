@@ -1,13 +1,11 @@
-package edu.uoc.elc.spring.lti.tool;
+package edu.uoc.elc.spring.lti.tool.registration;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
 
 /**
  * @author xaracil@uoc.edu
@@ -16,10 +14,13 @@ import java.util.List;
 @Setter
 @Component
 @Validated
-public class KeySetBean {
+public class KeyBean {
 	@NotEmpty
 	private String id;
-
 	@NotEmpty
-	private List<KeyBean> keys;
+	private String privateKey;
+	@NotEmpty
+	private String publicKey;
+	@NotEmpty
+	private String algorithm;
 }

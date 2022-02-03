@@ -2,7 +2,7 @@ package edu.uoc.elc.spring.lti.security.openid;
 
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.lti.tool.oidc.LoginRequest;
-import edu.uoc.elc.spring.lti.tool.RegistrationService;
+import edu.uoc.elc.spring.lti.tool.registration.RegistrationService;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
 import edu.uoc.elc.spring.lti.tool.ToolFactory;
 import org.springframework.security.core.Authentication;

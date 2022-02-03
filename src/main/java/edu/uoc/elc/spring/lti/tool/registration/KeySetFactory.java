@@ -1,4 +1,4 @@
-package edu.uoc.elc.spring.lti.tool;
+package edu.uoc.elc.spring.lti.tool.registration;
 
 import edu.uoc.elc.lti.tool.KeySet;
 

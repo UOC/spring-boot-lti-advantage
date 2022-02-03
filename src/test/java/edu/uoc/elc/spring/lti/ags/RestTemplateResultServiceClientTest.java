@@ -6,7 +6,7 @@ import edu.uoc.elc.lti.tool.ResourceLink;
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.lti.tool.oidc.InMemoryOIDCLaunchSession;
 import edu.uoc.elc.spring.lti.security.LTIAccessTokenProvider;
-import edu.uoc.elc.spring.lti.tool.RegistrationService;
+import edu.uoc.elc.spring.lti.tool.registration.RegistrationService;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
 import edu.uoc.lti.ags.LineItem;
 import edu.uoc.lti.ags.Result;

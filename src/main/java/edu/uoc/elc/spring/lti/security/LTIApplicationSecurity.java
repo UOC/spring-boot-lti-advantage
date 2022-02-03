@@ -1,7 +1,7 @@
 package edu.uoc.elc.spring.lti.security;
 
 import edu.uoc.elc.spring.lti.security.openid.OIDCFilter;
-import edu.uoc.elc.spring.lti.tool.RegistrationService;
+import edu.uoc.elc.spring.lti.tool.registration.RegistrationService;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;

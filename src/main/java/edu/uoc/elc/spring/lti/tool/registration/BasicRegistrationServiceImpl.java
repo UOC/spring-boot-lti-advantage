@@ -1,11 +1,10 @@
-package edu.uoc.elc.spring.lti.tool;
+package edu.uoc.elc.spring.lti.tool.registration;
 
 import edu.uoc.elc.lti.tool.Key;
 import edu.uoc.elc.lti.tool.Registration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 

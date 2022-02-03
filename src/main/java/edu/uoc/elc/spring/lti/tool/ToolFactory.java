@@ -2,6 +2,7 @@ package edu.uoc.elc.spring.lti.tool;
 
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.lti.tool.Registration;
+import edu.uoc.elc.spring.lti.tool.registration.RegistrationService;
 import edu.uoc.elc.spring.lti.security.openid.HttpSessionOIDCLaunchSession;
 import edu.uoc.elc.spring.lti.security.utils.TokenFactory;
 
