@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 /**
  * @author xaracil@uoc.edu
@@ -36,7 +38,8 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 		return preAuthFilter;
 	}
 
-	private final static String OIDC_LAUNCH_URL = "/oidclaunch{slash:/*}{registrationId}";
+	private final static String OIDC_LAUNCH_URL = "/oidclaunch";
+	private final static String OIDC_LAUNCH_URL_WITH_REGISTRATION = "/oidclaunch/{registrationId:.*}";
 	private final static String OIDC_LAUNCH_PREFIX = "/oidclaunch";
 
 	@Override
@@ -46,7 +49,8 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 		http.addFilter(preAuthFilter)
 						.addFilterAfter(oidcFilter(), preAuthFilter.getClass())
 						.authorizeRequests()
-						.antMatchers(OIDC_LAUNCH_URL).permitAll();
+						.antMatchers(OIDC_LAUNCH_URL).permitAll()
+						.antMatchers(OIDC_LAUNCH_URL_WITH_REGISTRATION).permitAll();
 	}
 
 	@Autowired
@@ -58,6 +62,11 @@ public class LTIApplicationSecurity extends WebSecurityConfigurerAdapter {
 	}
 
 	private OIDCFilter oidcFilter() {
-		return new OIDCFilter(OIDC_LAUNCH_URL, OIDC_LAUNCH_PREFIX, registrationService, toolDefinitionBean);
+		final OIDCFilter oidcFilter = new OIDCFilter(OIDC_LAUNCH_URL, OIDC_LAUNCH_PREFIX, registrationService, toolDefinitionBean);
+		oidcFilter.setRequiresAuthenticationRequestMatcher(new OrRequestMatcher(
+						new AntPathRequestMatcher(OIDC_LAUNCH_URL)
+						, new AntPathRequestMatcher(OIDC_LAUNCH_URL_WITH_REGISTRATION)
+		));
+		return oidcFilter;
 	}
 }
