@@ -25,7 +25,7 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration
 @EnableAutoConfiguration
-@ComponentScan({"edu.uoc.elc.spring.lti.tool"})
+@ComponentScan({"edu.uoc.elc.spring.lti.tool", "edu.uoc.elc.spring.lti.security.openid"})
 @EnableConfigurationProperties
 @PropertySource("application.properties")
 @TestConfiguration

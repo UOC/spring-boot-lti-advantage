@@ -1,7 +1,6 @@
 package edu.uoc.elc.spring.lti.security.openid;
 
-import edu.uoc.lti.oidc.OIDCLaunchSession;
-import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -11,8 +10,8 @@ import java.util.List;
 /**
  * @author xaracil@uoc.edu
  */
-@RequiredArgsConstructor
-public class HttpSessionOIDCLaunchSession implements OIDCLaunchSession {
+@Service
+public class HttpSessionOIDCLaunchSession implements RequestAwareOIDCLaunchSession {
 	private final static String STATE_SESSION_ATTRIBUTE_NAME = "currentLti1.3State";
 	private final static String NONCE_SESSION_ATTRIBUTE_NAME = "currentLti1.3Nonce";
 	private final static String TARGET_LINK_URI_SESSION_ATTRIBUTE_NAME = "currentLti1.3TargetLinkUri";
@@ -20,10 +19,11 @@ public class HttpSessionOIDCLaunchSession implements OIDCLaunchSession {
 	private final static String DEPLOYMENT_ID_SESSION_ATTRIBUTE_NAME = "currentLti1.3DeploymentId";
 	private final static String REGISTRATION_ID_SESSION_ATTRIBUTE_NAME = "currentLti1.3RegistrationId";
 
-	private final HttpServletRequest request;
+	private HttpServletRequest request;
 
 	public final static List<String> KEYS = Arrays.asList(STATE_SESSION_ATTRIBUTE_NAME, NONCE_SESSION_ATTRIBUTE_NAME, TARGET_LINK_URI_SESSION_ATTRIBUTE_NAME, CLIENT_ID_SESSION_ATTRIBUTE_NAME, DEPLOYMENT_ID_SESSION_ATTRIBUTE_NAME);
 
+	@Override
 	public void clear() {
 		final HttpSession session = this.request.getSession(false);
 		if (session != null) {
@@ -34,6 +34,11 @@ public class HttpSessionOIDCLaunchSession implements OIDCLaunchSession {
 			setRegistrationId(null);
 			setDeploymentId(null);
 		}
+	}
+
+	@Override
+	public void init(HttpServletRequest request) {
+		this.request = request;
 	}
 
 	@Override
@@ -94,10 +99,12 @@ public class HttpSessionOIDCLaunchSession implements OIDCLaunchSession {
 		return getAttribute(DEPLOYMENT_ID_SESSION_ATTRIBUTE_NAME);
 	}
 
+	@Override
 	public void setRegistrationId(String s) {
 		setAttribute(REGISTRATION_ID_SESSION_ATTRIBUTE_NAME, s);
 	}
 
+	@Override
 	public String getRegistrationId() {
 		return getAttribute(REGISTRATION_ID_SESSION_ATTRIBUTE_NAME);
 	}

@@ -1,10 +1,10 @@
 package edu.uoc.elc.spring.lti.tool;
 
-import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.lti.tool.Registration;
-import edu.uoc.elc.spring.lti.tool.registration.RegistrationService;
-import edu.uoc.elc.spring.lti.security.openid.HttpSessionOIDCLaunchSession;
+import edu.uoc.elc.lti.tool.Tool;
+import edu.uoc.elc.spring.lti.security.openid.RequestAwareOIDCLaunchSession;
 import edu.uoc.elc.spring.lti.security.utils.TokenFactory;
+import edu.uoc.elc.spring.lti.tool.registration.RegistrationService;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,26 +14,27 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class ToolFactory {
 
-	HttpSessionOIDCLaunchSession oidcLaunchSession;
+	RequestAwareOIDCLaunchSession oidcLaunchSession;
 
 	public Tool from(RegistrationService registrationService, ToolDefinitionBean toolDefinitionBean, HttpServletRequest request) {
 		return from(registrationService, toolDefinitionBean, request, false);
 	}
 
 	public Tool from(RegistrationService registrationService, ToolDefinitionBean toolDefinitionBean, String registrationId, HttpServletRequest request, boolean clearSession) {
-		createSession(request, clearSession);
+		this.oidcLaunchSession = toolDefinitionBean.getRequestAwareOIDCLaunchSession();
 		createSession(request, clearSession);
 		oidcLaunchSession.setRegistrationId(registrationId);
 		return getTool(registrationService, toolDefinitionBean, request);
 	}
 
 	public Tool from(RegistrationService registrationService, ToolDefinitionBean toolDefinitionBean, HttpServletRequest request, boolean clearSession) {
+		this.oidcLaunchSession = toolDefinitionBean.getRequestAwareOIDCLaunchSession();
 		createSession(request, clearSession);
 		return getTool(registrationService, toolDefinitionBean, request);
 	}
 
 	private void createSession(HttpServletRequest request, boolean clearSession) {
-		oidcLaunchSession = new HttpSessionOIDCLaunchSession(request);
+		oidcLaunchSession.init(request);
 		if (clearSession) {
 			oidcLaunchSession.clear();
 		}

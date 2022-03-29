@@ -2,6 +2,7 @@ package edu.uoc.elc.spring.lti.tool;
 
 import edu.uoc.elc.lti.tool.Registration;
 import edu.uoc.elc.lti.tool.ToolBuilders;
+import edu.uoc.elc.spring.lti.security.openid.RequestAwareOIDCLaunchSession;
 import edu.uoc.elc.spring.lti.tool.builders.ClaimAccessorService;
 import edu.uoc.elc.spring.lti.tool.builders.ClientCredentialsTokenBuilderService;
 import edu.uoc.elc.spring.lti.tool.builders.DeepLinkingTokenBuilderService;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Component;
 public class ToolDefinitionBean {
 	@Getter
 	private final ClaimAccessorService claimAccessor;
+	@Getter
+	private final RequestAwareOIDCLaunchSession requestAwareOIDCLaunchSession;
 
 	private final DeepLinkingTokenBuilderService deepLinkingTokenBuilder;
 	private final ClientCredentialsTokenBuilderService clientCredentialsTokenBuilder;
