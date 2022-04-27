@@ -10,7 +10,7 @@
 
 	<groupId>edu.uoc.elc.lti</groupId>
 	<artifactId>spring-boot-lti-advantage</artifactId>
-	<version>0.0.11-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
@@ -21,7 +21,7 @@
 		<connection>scm:git:git@devel.elearnlab.org:elearn/spring-boot-lti-advantage.git</connection>
 		<developerConnection>scm:git:git@devel.elearnlab.org:elearn/spring-boot-lti-advantage.git</developerConnection>
 		<url>https://devel.elearnlab.org/elearn/spring-boot-lti-advantage</url>
-		<tag>spring-boot-lti-advantage-0.0.6</tag>
+		<tag>spring-boot-lti-advantage-1.0.0</tag>
 	</scm>
 
   <distributionManagement>
@@ -68,13 +68,13 @@
 		<dependency>
 			<groupId>edu.uoc.elc.lti</groupId>
 			<artifactId>lti-13</artifactId>
-      <version>0.0.4-SNAPSHOT</version>
+      <version>1.0.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>edu.uoc.elc.lti</groupId>
 			<artifactId>lti-13-jwt</artifactId>
-			<version>0.0.4-SNAPSHOT</version>
+			<version>1.0.0</version>
 			<scope>test</scope>
 		</dependency>
 
