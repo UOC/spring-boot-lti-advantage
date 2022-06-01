@@ -13,10 +13,13 @@ import org.springframework.context.annotation.Configuration;
 public class RequestAwareOIDCLaunchSessionBeanConfig {
 	private final CachedOIDCLaunchSession cachedOIDCLaunchSession;
 	private final HttpSessionOIDCLaunchSession httpSessionOIDCLaunchSession;
+	private final HttpSessionStateRelatedOIDCLaunchSession httpSessionStateRelatedOIDCLaunchSession;
 
 	@Bean(name = "requestAwareOIDCLaunchSession")
 	public RequestAwareOIDCLaunchSessionBeanFactory requestAwareOIDCLaunchSessionBeanFactory() {
-		return new RequestAwareOIDCLaunchSessionBeanFactory(httpSessionOIDCLaunchSession, cachedOIDCLaunchSession);
+		return new RequestAwareOIDCLaunchSessionBeanFactory(httpSessionOIDCLaunchSession,
+						cachedOIDCLaunchSession,
+						httpSessionStateRelatedOIDCLaunchSession);
 	}
 
 	@Bean

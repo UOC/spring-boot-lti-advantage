@@ -19,6 +19,7 @@ import javax.validation.constraints.NotEmpty;
 public class RequestAwareOIDCLaunchSessionBeanFactory implements FactoryBean<RequestAwareOIDCLaunchSession> {
 	private final HttpSessionOIDCLaunchSession httpSessionOIDCLaunchSession;
 	private final CachedOIDCLaunchSession cachedOIDCLaunchSession;
+	private final HttpSessionStateRelatedOIDCLaunchSession httpSessionStateRelatedOIDCLaunchSession;
 
 	@Getter
 	@Setter
@@ -29,6 +30,8 @@ public class RequestAwareOIDCLaunchSessionBeanFactory implements FactoryBean<Req
 	public RequestAwareOIDCLaunchSession getObject() throws Exception {
 		if ("cached".equals(type)) {
 			return cachedOIDCLaunchSession;
+		} else if ("multiple".equals(type)) {
+			return httpSessionStateRelatedOIDCLaunchSession;
 		}
 		return httpSessionOIDCLaunchSession;
 	}
