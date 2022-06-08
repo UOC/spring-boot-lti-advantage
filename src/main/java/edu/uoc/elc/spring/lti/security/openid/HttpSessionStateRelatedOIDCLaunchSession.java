@@ -44,7 +44,7 @@ public class HttpSessionStateRelatedOIDCLaunchSession implements RequestAwareOID
 	@Override
 	public void init(HttpServletRequest request) {
 		this.request = request;
-		this.state = request.getParameter("state");
+		setState(request.getParameter("state"));
 	}
 
 	@Override
