@@ -1,5 +1,7 @@
 package edu.uoc.elc.spring.lti.security.openid;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +13,7 @@ import java.util.List;
  * @author xaracil@uoc.edu
  */
 @Service
+@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE) // multiple instances of bean
 public class HttpSessionStateRelatedOIDCLaunchSession implements RequestAwareOIDCLaunchSession {
 
 	public final static String PREFIX = "currentLTI1.3";
