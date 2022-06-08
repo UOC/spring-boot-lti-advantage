@@ -113,6 +113,7 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 						while (attributeNames.hasMoreElements()) {
 							final String name = attributeNames.nextElement();
 							if (!keysToSave.contains(name) && !name.startsWith(prefixToSave)) {
+								LTIProcessingFilter.this.logger.info("Removing session attribute with name " + name);
 								session.removeAttribute(name);
 							}
 						}
