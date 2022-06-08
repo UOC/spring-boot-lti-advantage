@@ -64,7 +64,7 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 			this.logger.info("Valid LTI call from " + tool.getUser().getId());
 			return token;
 		}
-		this.logger.info("The request is not a valid LTI one. Reason: " + tool.getReason());
+		this.logger.info("The request with state " + state + " is not a valid LTI one. Reason: " + tool.getReason());
 		return null;
 	}
 
