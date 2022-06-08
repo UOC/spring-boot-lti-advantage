@@ -124,8 +124,8 @@ public class HttpSessionStateRelatedOIDCLaunchSession implements RequestAwareOID
 		return getAttribute(REGISTRATION_ID_SUFFIX);
 	}
 
-	private String getAttribute(String name) {
-		Object state = request.getSession().getAttribute(name);
-		return state != null ? state.toString() : null;
+	private String getAttribute(String suffix) {
+		Object value = request.getSession().getAttribute(getAttributeName(suffix));
+		return value != null ? value.toString() : null;
 	}
 }
