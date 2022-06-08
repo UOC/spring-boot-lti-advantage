@@ -49,8 +49,17 @@ public class HttpSessionStateRelatedOIDCLaunchSession implements RequestAwareOID
 
 	@Override
 	public void setState(String s) {
+		if (s == null) {
+			// delete current state
+			setAttribute(STATE_SUFFIX, null);
+		}
 		this.state = s;
-		setAttribute(STATE_SUFFIX, s);
+		if (this.state != null) {
+			setAttribute(STATE_SUFFIX, s);
+			if (registrationId != null) {
+				setAttribute(REGISTRATION_ID_SUFFIX, this.registrationId);
+			}
+		}
 	}
 
 	@Override
