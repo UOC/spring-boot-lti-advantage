@@ -32,12 +32,12 @@ public class HttpSessionStateRelatedOIDCLaunchSession implements RequestAwareOID
 	public void clear() {
 		final HttpSession session = this.request.getSession(false);
 		if (session != null) {
-			setState(null);
 			setTargetLinkUri(null);
 			setNonce(null);
 			setClientId(null);
 			setRegistrationId(null);
 			setDeploymentId(null);
+			setState(null);
 		}
 	}
 
