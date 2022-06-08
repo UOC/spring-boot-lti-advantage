@@ -17,27 +17,28 @@ import javax.validation.constraints.NotEmpty;
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = "oidc.factory")
 public class RequestAwareOIDCLaunchSessionBeanFactory implements FactoryBean<RequestAwareOIDCLaunchSession> {
-	private final HttpSessionOIDCLaunchSession httpSessionOIDCLaunchSession;
-	private final CachedOIDCLaunchSession cachedOIDCLaunchSession;
-	private final HttpSessionStateRelatedOIDCLaunchSession httpSessionStateRelatedOIDCLaunchSession;
-
 	@Getter
 	@Setter
 	@NotEmpty
 	private String type;
 
 	@Override
-	public RequestAwareOIDCLaunchSession getObject() throws Exception {
+	public RequestAwareOIDCLaunchSession getObject() {
 		if ("cached".equals(type)) {
-			return cachedOIDCLaunchSession;
+			return new CachedOIDCLaunchSession();
 		} else if ("multiple".equals(type)) {
-			return httpSessionStateRelatedOIDCLaunchSession;
+			return new HttpSessionStateRelatedOIDCLaunchSession();
 		}
-		return httpSessionOIDCLaunchSession;
+		return new HttpSessionOIDCLaunchSession();
 	}
 
 	@Override
 	public Class<?> getObjectType() {
 		return RequestAwareOIDCLaunchSession.class;
+	}
+
+	@Override
+	public boolean isSingleton() {
+		return false;
 	}
 }
