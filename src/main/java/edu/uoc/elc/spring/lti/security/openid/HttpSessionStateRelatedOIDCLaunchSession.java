@@ -26,6 +26,7 @@ public class HttpSessionStateRelatedOIDCLaunchSession implements RequestAwareOID
 
 	private HttpServletRequest request;
 	private String state;
+	private String registrationId;
 
 	@Override
 	public void clear() {
@@ -112,7 +113,10 @@ public class HttpSessionStateRelatedOIDCLaunchSession implements RequestAwareOID
 
 	@Override
 	public void setRegistrationId(String s) {
-		setAttribute(REGISTRATION_ID_SUFFIX, s);
+		this.registrationId = s;
+		if (this.state != null) {
+			setAttribute(REGISTRATION_ID_SUFFIX, s);
+		}
 	}
 
 	@Override
