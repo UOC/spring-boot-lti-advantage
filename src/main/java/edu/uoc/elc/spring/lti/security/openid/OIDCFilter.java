@@ -70,7 +70,8 @@ public class OIDCFilter extends AbstractAuthenticationProcessingFilter {
 	private String getRegistrationId(HttpServletRequest request) {
 		// get registration id from path (it's the last path of the path)
 		final String requestURI = request.getRequestURI();
-		final String lastPath = requestURI.replaceAll("^" + filterUrl, "");
+		final String contextPath = request.getContextPath();
+		final String lastPath = requestURI.replaceAll("^" + contextPath + filterUrl, "");
 		return lastPath.replaceAll("^/", "");
 	}
 }
