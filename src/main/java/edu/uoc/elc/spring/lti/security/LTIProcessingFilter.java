@@ -2,6 +2,7 @@ package edu.uoc.elc.spring.lti.security;
 
 import edu.uoc.elc.lti.tool.Tool;
 import edu.uoc.elc.spring.lti.security.openid.HttpSessionOIDCLaunchSession;
+import edu.uoc.elc.spring.lti.security.openid.HttpSessionStateRelatedOIDCLaunchSession;
 import edu.uoc.elc.spring.lti.security.utils.TokenFactory;
 import edu.uoc.elc.spring.lti.tool.registration.RegistrationService;
 import edu.uoc.elc.spring.lti.tool.ToolDefinitionBean;
@@ -63,7 +64,7 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 			this.logger.info("Valid LTI call from " + tool.getUser().getId());
 			return token;
 		}
-		this.logger.info("The request is not a valid LTI one. Reason: " + tool.getReason());
+		this.logger.info("The request with state " + state + " is not a valid LTI one. Reason: " + tool.getReason());
 		return null;
 	}
 
@@ -107,10 +108,12 @@ public class LTIProcessingFilter extends AbstractPreAuthenticatedProcessingFilte
 					if (session != null) {
 						LTIProcessingFilter.this.logger.debug("Invalidating existing session");
 						final List<String> keysToSave = HttpSessionOIDCLaunchSession.KEYS;
+						final String prefixToSave = HttpSessionStateRelatedOIDCLaunchSession.PREFIX;
 						final Enumeration<String> attributeNames = session.getAttributeNames();
 						while (attributeNames.hasMoreElements()) {
 							final String name = attributeNames.nextElement();
-							if (!keysToSave.contains(name)) {
+							if (!keysToSave.contains(name) && !name.startsWith(prefixToSave)) {
+								LTIProcessingFilter.this.logger.info("Removing session attribute with name " + name);
 								session.removeAttribute(name);
 							}
 						}
