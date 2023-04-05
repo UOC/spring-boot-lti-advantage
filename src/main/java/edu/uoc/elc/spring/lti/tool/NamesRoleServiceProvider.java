@@ -4,6 +4,7 @@ import edu.uoc.elc.lti.platform.Member;
 import edu.uoc.elc.lti.platform.NamesRoleServiceResponse;
 import edu.uoc.elc.lti.tool.NamesRoleService;
 import edu.uoc.elc.lti.tool.ResourceLink;
+import edu.uoc.elc.lti.tool.RolesEnum;
 import edu.uoc.lti.namesrole.ContentTypes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -15,13 +16,13 @@ import org.springframework.security.oauth2.client.token.AccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.constraints.NotNull;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author xaracil@uoc.edu
@@ -31,6 +32,7 @@ public class NamesRoleServiceProvider {
 	private final AccessTokenProvider accessTokenProvider;
 	private final NamesRoleService namesRoleService;
 	private final ResourceLink resourceLink;
+	private final String ROLE_PARAMETER = "role";
 
 	private OAuth2RestOperations template;
 
@@ -43,7 +45,56 @@ public class NamesRoleServiceProvider {
 			return Collections.EMPTY_LIST;
 		}
 
-		final URI membershipUrl = getPlatformUri();
+		final URI membershipUrl = getPlatformUri(null);
+		return getMembersFromServer(membershipUrl);
+	}
+
+	/**
+	 * Call to platform's Name and Role Service in order to get members allowing set parameters to filter
+	 * @param params Map wuth key and value parameters
+	 * @return
+	 * @return the members of the platform
+	 */
+	public List<Member> getMembers(@NotNull Map<String, String> params) throws URISyntaxException {
+		if (!hasNameRoleService()) {
+			return Collections.EMPTY_LIST;
+		}
+
+		URI membershipUrl = getPlatformUri(params);
+		return getMembersFromServer(membershipUrl);
+	}
+
+	/**
+	 * Call to platform's Name and Role Service in order to get learners
+	 * @return the members of the platform
+	 */
+	public List<Member> getLearners() throws URISyntaxException {
+		if (!hasNameRoleService()) {
+			return Collections.EMPTY_LIST;
+		}
+
+		final Map<String, String> params = new HashMap<String, String>() {{
+			put(ROLE_PARAMETER, RolesEnum.LEARNER.getName());
+		}};
+		final URI membershipUrl = getPlatformUri(params);
+
+		return getMembersFromServer(membershipUrl);
+	}
+
+	/**
+	 * Call to platform's Name and Role Service in order to get instructors
+	 * @return the members of the platform
+	 */
+	public List<Member> getInstructors() throws URISyntaxException {
+		if (!hasNameRoleService()) {
+			return Collections.EMPTY_LIST;
+		}
+
+		final Map<String, String> params = new HashMap<String, String>() {{
+			put(ROLE_PARAMETER, RolesEnum.INSTRUCTOR.getName());
+		}};
+		final URI membershipUrl = getPlatformUri(params);
+
 		return getMembersFromServer(membershipUrl);
 	}
 
@@ -51,11 +102,17 @@ public class NamesRoleServiceProvider {
 		return namesRoleService != null;
 	}
 
-	private URI getPlatformUri() throws URISyntaxException {
+	private URI getPlatformUri(Map<String, String> params) throws URISyntaxException {
 		URI membershipUrl = new URI(namesRoleService.getContext_memberships_url());
 
 		if (resourceLink != null) {
 			membershipUrl = appendResourceLinkIdToQuery(membershipUrl);
+		}
+
+		if (params != null) {
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				membershipUrl = UriComponentsBuilder.fromUri(membershipUrl).queryParam(entry.getKey(), entry.getValue()).build().toUri();
+			}
 		}
 		return membershipUrl;
 	}
