@@ -57,7 +57,8 @@ public class RestTemplateLineItemServiceClientTest {
 		final Tool tool = new Tool(registration,
 						claimAccessorService.getClaimAccessor(registration),
 						launchSession,
-						toolDefinitionBean.getBuilders(registration, "id"));
+						toolDefinitionBean.getBuilders(registration, "id"),
+						"id");
 		Assert.assertNotNull(tool);
 
 		// spy tool
