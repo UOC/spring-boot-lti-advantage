@@ -47,11 +47,13 @@ public class ToolFactory {
 		Tool tool = new Tool(registration,
 						toolDefinitionBean.getClaimAccessor().getClaimAccessor(registration),
 						oidcLaunchSession,
-						toolDefinitionBean.getBuilders(registration, kid));
+						toolDefinitionBean.getBuilders(registration, kid),
+						kid);
 
 		String token = TokenFactory.from(request);
 		String state = request.getParameter("state");
 		tool.validate(token, state);
 		return tool;
 	}
+
 }

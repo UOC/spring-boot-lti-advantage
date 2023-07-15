@@ -10,7 +10,7 @@
 
 	<groupId>edu.uoc.elc.lti</groupId>
 	<artifactId>spring-boot-lti-advantage</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.6</version>
 	<packaging>jar</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
@@ -68,13 +68,13 @@
 		<dependency>
 			<groupId>edu.uoc.elc.lti</groupId>
 			<artifactId>lti-13</artifactId>
-      <version>1.0.0</version>
+      		<version>1.0.3</version>
 		</dependency>
 
 		<dependency>
 			<groupId>edu.uoc.elc.lti</groupId>
 			<artifactId>lti-13-jwt</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.2</version>
 			<scope>test</scope>
 		</dependency>
 
